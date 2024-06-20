@@ -1,34 +1,95 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Button,
+} from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const ProfileScreen = () => {
   // Placeholder user data
-  const user = {
+  const [user, setUser] = useState({
     name: "Jane Doe",
     username: "@janedoe",
     bio: "Software Developer | UI/UX Designer",
     location: "New York, USA",
     followers: 1500,
     following: 200,
+    profession: "Software Developer",
     profileImage: require("../Assets/Images/login.png"), // Replace with actual image path
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+  };
+
+  const handleImagePicker = () => {
+    launchImageLibrary({ mediaType: "photo" }, (response) => {
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.error) {
+        console.log("ImagePicker Error: ", response.error);
+      } else if (response.assets && response.assets.length > 0) {
+        setUser({ ...user, profileImage: { uri: response.assets[0].uri } });
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.profileHeader}>
-        <Image source={user.profileImage} style={styles.profileImage} />
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.username}>{user.username}</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
-        <Text style={styles.location}>{user.location}</Text>
-        <View style={styles.followContainer}>
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
-            <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={handleImagePicker}>
+          <Image source={user.profileImage} style={styles.profileImage} />
+        </TouchableOpacity>
+        {isEditing ? (
+          <>
+            <TextInput
+              style={styles.input}
+              value={user.name}
+              onChangeText={(text) => setUser({ ...user, name: text })}
+              placeholder="Name"
+            />
+            <TextInput
+              style={styles.input}
+              value={user.profession}
+              onChangeText={(text) => setUser({ ...user, profession: text })}
+              placeholder="Profession"
+            />
+            <TextInput
+              style={styles.input}
+              value={user.bio}
+              onChangeText={(text) => setUser({ ...user, bio: text })}
+              placeholder="Bio"
+            />
+            <TextInput
+              style={styles.input}
+              value={user.location}
+              onChangeText={(text) => setUser({ ...user, location: text })}
+              placeholder="Location"
+            />
+            <Button title="Save" onPress={handleSave} />
+          </>
+        ) : (
+          <>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.profession}>{user.profession}</Text>
+            <Text style={styles.bio}>{user.bio}</Text>
+            <Text style={styles.location}>{user.location}</Text>
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+              <Text style={styles.editButtonText}>Edit Profile</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
@@ -66,8 +127,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  username: {
-    fontSize: 16,
+  profession: {
+    fontSize: 18,
     color: "#666666",
     marginBottom: 10,
   },
@@ -81,28 +142,21 @@ const styles = StyleSheet.create({
     color: "#666666",
     marginBottom: 20,
   },
-  followContainer: {
-    flexDirection: "row",
-    marginBottom: 20,
+  input: {
+    width: "100%",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
-  followButton: {
+  editButton: {
     backgroundColor: "#1E90FF",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    marginRight: 10,
   },
-  followButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  messageButton: {
-    backgroundColor: "#FF1493",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  messageButtonText: {
+  editButtonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
   },
