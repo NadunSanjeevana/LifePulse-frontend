@@ -53,9 +53,21 @@ function App() {
     <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Onboard">
-          <Stack.Screen name="Onboard" component={OnboardScreen} />
-          <Stack.Screen name="SignIn" component={MainTabs} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen
+            name="Onboard"
+            component={OnboardScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignIn"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="MainTabs"
             component={MainTabs}
