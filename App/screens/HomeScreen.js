@@ -1,31 +1,23 @@
+// HomeScreen.js
 import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
-  Button,
-  Modal,
-  TextInput,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
   Image,
 } from "react-native";
-import DateTimePicker from "react-native-modal-datetime-picker";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import ActivityModal from "../modal/ActivityModal";
 
 const HomeScreen = () => {
   const { userData } = useContext(AuthContext);
   const [selectedDate, setSelectedDate] = useState("");
   const [activities, setActivities] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [newActivity, setNewActivity] = useState("");
-  const [timeFrom, setTimeFrom] = useState("");
-  const [timeTo, setTimeTo] = useState("");
-  const [isTimeFromPickerVisible, setTimeFromPickerVisibility] =
-    useState(false);
-  const [isTimeToPickerVisible, setTimeToPickerVisibility] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -34,46 +26,12 @@ const HomeScreen = () => {
     setSelectedDate(formattedDate);
   }, []);
 
-  const addActivity = () => {
+  const addActivity = (newActivity, timeFrom, timeTo) => {
     const newEntry = { task: newActivity, timeFrom, timeTo };
     setActivities({
       ...activities,
       [selectedDate]: [...(activities[selectedDate] || []), newEntry],
     });
-    setNewActivity("");
-    setTimeFrom("");
-    setTimeTo("");
-    setModalVisible(false);
-  };
-
-  const showTimeFromPicker = () => {
-    setTimeFromPickerVisibility(true);
-  };
-
-  const hideTimeFromPicker = () => {
-    setTimeFromPickerVisibility(false);
-  };
-
-  const handleTimeFromConfirm = (time) => {
-    setTimeFrom(
-      time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    );
-    hideTimeFromPicker();
-  };
-
-  const showTimeToPicker = () => {
-    setTimeToPickerVisibility(true);
-  };
-
-  const hideTimeToPicker = () => {
-    setTimeToPickerVisibility(false);
-  };
-
-  const handleTimeToConfirm = (time) => {
-    setTimeTo(
-      time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    );
-    hideTimeToPicker();
   };
 
   return (
@@ -120,48 +78,10 @@ const HomeScreen = () => {
         <Icon name="calendar" size={24} color="#2D8F95" />
       </TouchableOpacity>
 
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              placeholder="Enter Activity"
-              value={newActivity}
-              onChangeText={setNewActivity}
-              style={styles.textInput}
-            />
-            <TouchableOpacity onPress={showTimeFromPicker}>
-              <TextInput
-                placeholder="Time From"
-                value={timeFrom}
-                editable={false}
-                style={styles.textInput}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={showTimeToPicker}>
-              <TextInput
-                placeholder="Time To"
-                value={timeTo}
-                editable={false}
-                style={styles.textInput}
-              />
-            </TouchableOpacity>
-            <Button title="Add" onPress={addActivity} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-
-      <DateTimePicker
-        isVisible={isTimeFromPickerVisible}
-        mode="time"
-        onConfirm={handleTimeFromConfirm}
-        onCancel={hideTimeFromPicker}
-      />
-      <DateTimePicker
-        isVisible={isTimeToPickerVisible}
-        mode="time"
-        onConfirm={handleTimeToConfirm}
-        onCancel={hideTimeToPicker}
+      <ActivityModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        addActivity={addActivity}
       />
     </ScrollView>
   );
@@ -223,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.06,
     color: "#FFFFFF",
-    fontFamily: "Poppins",
+
     marginTop: 10,
   },
   sectionTitle: {
@@ -233,7 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
+
     paddingHorizontal: 20,
   },
   currentDate: {
@@ -241,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
+
     paddingHorizontal: 20,
     marginBottom: 10,
   },
@@ -264,7 +184,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
+
     marginBottom: 10,
   },
   taskItem: {
@@ -275,13 +195,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
   },
   taskTime: {
     fontSize: 12,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
   },
   addButton: {
     position: "absolute",
@@ -314,25 +232,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 15,
     elevation: 4,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "gray",
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
   },
 });
 

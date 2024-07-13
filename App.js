@@ -5,13 +5,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
 import HomeScreen from "./App/screens/HomeScreen";
 import CalendarScreen from "./App/screens/CalendarScreen";
 import ProfileScreen from "./App/screens/ProfileScreen";
 import ChartScreen from "./App/screens/ChartScreen";
-import OnboardScreen from "./App/screens/OnboardingScreen";
-import SignInScreen from "./App/screens/Login";
-import RegisterScreen from "./App/screens/Login";
+import OnboardingScreen from "./App/screens/OnboardingScreen";
+import SignInScreen from "./App/screens/SignInScreen";
+import RegisterScreen from "./App/screens/RegisterScreen";
 import { AuthProvider } from "./App/Context/AuthContext";
 
 const Tab = createBottomTabNavigator();
@@ -52,15 +54,15 @@ function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Onboard">
+        <Stack.Navigator initialRouteName="Onboarding">
           <Stack.Screen
-            name="Onboard"
-            component={OnboardScreen}
+            name="Onboarding"
+            component={OnboardingScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name="SignIn"
-            component={MainTabs}
+            component={SignInScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
