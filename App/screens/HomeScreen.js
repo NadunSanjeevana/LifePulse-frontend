@@ -1,4 +1,3 @@
-// HomeScreen.js
 import React, { useContext, useState, useEffect } from "react";
 import {
   View,
@@ -12,6 +11,7 @@ import { AuthContext } from "../Context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ActivityModal from "../modal/ActivityModal";
+import { createTask } from "../services/api"; // Import the new API function
 
 const HomeScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -26,12 +26,23 @@ const HomeScreen = () => {
     setSelectedDate(formattedDate);
   }, []);
 
-  const addActivity = (newActivity, timeFrom, timeTo) => {
-    const newEntry = { task: newActivity, timeFrom, timeTo };
-    setActivities({
-      ...activities,
-      [selectedDate]: [...(activities[selectedDate] || []), newEntry],
-    });
+  const addActivity = async (newActivity, timeFrom, timeTo) => {
+    const newEntry = {
+      task: newActivity,
+      timeFrom,
+      timeTo,
+      date: selectedDate,
+    };
+
+    try {
+      const savedActivity = await createTask(newEntry); // Save to backend
+      setActivities({
+        ...activities,
+        [selectedDate]: [...(activities[selectedDate] || []), savedActivity],
+      });
+    } catch (error) {
+      console.error("Failed to add activity:", error);
+    }
   };
 
   return (
@@ -50,7 +61,17 @@ const HomeScreen = () => {
       </View>
 
       <Text style={styles.sectionTitle}>Tasks List</Text>
-      <Text style={styles.currentDate}>{selectedDate}</Text>
+      <View style={styles.dateContainer}>
+        <Text style={styles.currentDate}>{selectedDate}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("CalendarScreen")}>
+          <Icon
+            name="calendar"
+            size={24}
+            color="#2D8F95"
+            style={styles.calendarIcon}
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.tasksList}>
         <Text style={styles.taskText}>Today's Tasks</Text>
@@ -64,19 +85,14 @@ const HomeScreen = () => {
         ))}
       </View>
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Icon name="plus-circle" size={24} color="#2D8F95" />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.calendarButton}
-        onPress={() => navigation.navigate("CalendarScreen")}
-      >
-        <Icon name="calendar" size={24} color="#2D8F95" />
-      </TouchableOpacity>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Icon name="plus-circle" size={24} color="#2D8F95" />
+        </TouchableOpacity>
+      </View>
 
       <ActivityModal
         modalVisible={modalVisible}
@@ -143,7 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.06,
     color: "#FFFFFF",
-
     marginTop: 10,
   },
   sectionTitle: {
@@ -153,17 +168,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-
     paddingHorizontal: 20,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 10,
   },
   currentDate: {
     textAlign: "left",
     fontSize: 16,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-
-    paddingHorizontal: 20,
-    marginBottom: 10,
+  },
+  calendarIcon: {
+    marginLeft: 10,
   },
   tasksList: {
     margin: 20,
@@ -184,7 +204,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
-
     marginBottom: 10,
   },
   taskItem: {
@@ -201,10 +220,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.06,
     color: "rgba(0, 0, 0, 0.75)",
   },
-  addButton: {
+  iconContainer: {
     position: "absolute",
     bottom: 50,
     right: 30,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  addButton: {
     backgroundColor: "#FFFFFF",
     borderRadius: 50,
     padding: 10,
@@ -216,11 +239,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 15,
     elevation: 4,
+    marginLeft: 15,
   },
   calendarButton: {
-    position: "absolute",
-    bottom: 50,
-    right: 90,
     backgroundColor: "#FFFFFF",
     borderRadius: 50,
     padding: 10,

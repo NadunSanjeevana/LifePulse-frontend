@@ -63,7 +63,7 @@ export const getTasks = async () => {
 
 export const createTask = async (task) => {
   try {
-    const response = await api.post("/tasks", task);
+    const response = await api.post("tasks/addTasks", task);
     return response.data;
   } catch (error) {
     console.error(
