@@ -11,7 +11,7 @@ import { AuthContext } from "../Context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ActivityModal from "../modal/ActivityModal";
-import { createTask } from "../services/api"; // Import the new API function
+import { createTask, getTasksForDate } from "../services/api"; // Import the new API function
 
 const HomeScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -22,9 +22,20 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const today = new Date();
-    const formattedDate = today.toLocaleDateString();
+    const formattedDate = today.toISOString().split("T")[0]; // Format date as "YYYY-MM-DD"
     setSelectedDate(formattedDate);
+    fetchTasks(formattedDate); // Fetch tasks for today's date initially
   }, []);
+
+  const fetchTasks = async (date) => {
+    try {
+      const tasksForDate = await getTasksForDate(date); // Fetch tasks for the selected date
+      setActivities({ [date]: tasksForDate });
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+      // Handle error (e.g., show error message to the user)
+    }
+  };
 
   const addActivity = async (newActivity, timeFrom, timeTo) => {
     const newEntry = {
@@ -36,9 +47,24 @@ const HomeScreen = () => {
 
     try {
       const savedActivity = await createTask(newEntry); // Save to backend
+      const formattedActivity = {
+        task: savedActivity.description,
+        timeFrom: new Date(savedActivity.timeFrom).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        timeTo: new Date(savedActivity.timeTo).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        date: selectedDate,
+      };
       setActivities({
         ...activities,
-        [selectedDate]: [...(activities[selectedDate] || []), savedActivity],
+        [selectedDate]: [
+          ...(activities[selectedDate] || []),
+          formattedActivity,
+        ],
       });
     } catch (error) {
       console.error("Failed to add activity:", error);

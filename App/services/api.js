@@ -48,6 +48,32 @@ export const signIn = async (credentials) => {
 };
 
 // Task-related functions
+export const getTasksForDate = async (date) => {
+  try {
+    const response = await api.get(`/tasks?date=${date}`);
+    // Format the data to match the frontend expectations
+    const formattedData = response.data.map((task) => ({
+      task: task.description,
+      timeFrom: new Date(task.timeFrom).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      timeTo: new Date(task.timeTo).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      date: date, // Assuming all tasks are for the requested date
+    }));
+    return formattedData;
+  } catch (error) {
+    console.error(
+      "Error fetching tasks for date:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
 export const getTasks = async () => {
   try {
     const response = await api.get("/tasks");
