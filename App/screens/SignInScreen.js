@@ -14,9 +14,13 @@ const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
-    signIn({ email, password });
-    navigation.navigate("MainTabs");
+  const handleSignIn = async () => {
+    const isSignIn = await signIn({ email, password });
+    if (isSignIn) {
+      navigation.navigate("MainTabs");
+    } else {
+      alert("Email or Password Incorrect");
+    }
   };
 
   return (

@@ -31,13 +31,36 @@ const CalenderScreen = () => {
   };
 
   return (
-    <ScrollView style={{ padding: 20 }}>
+    <ScrollView style={styles.container}>
       <SearchBar />
       <Slider />
       <Calendar
         onDayPress={(day) => setSelectedDate(day.dateString)}
         markedDates={{
-          [selectedDate]: { selected: true, marked: true },
+          [selectedDate]: {
+            selected: true,
+            marked: true,
+            selectedDotColor: "#28A745",
+          },
+        }}
+        theme={{
+          calendarBackground: "#FFFFFF",
+          textSectionTitleColor: "#28A745",
+          selectedDayBackgroundColor: "#28A745",
+          selectedDayTextColor: "#FFFFFF",
+          todayTextColor: "#28A745",
+          dayTextColor: "#333333",
+          textDisabledColor: "#d9e1e8",
+          dotColor: "#28A745",
+          selectedDotColor: "#FFFFFF",
+          arrowColor: "#28A745",
+          monthTextColor: "#28A745",
+          textDayFontFamily: "Roboto",
+          textMonthFontFamily: "Roboto",
+          textDayHeaderFontFamily: "Roboto",
+          textDayFontSize: 16,
+          textMonthFontSize: 18,
+          textDayHeaderFontSize: 14,
         }}
       />
       <View style={styles.activityContainer}>
@@ -75,15 +98,22 @@ const CalenderScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#FFFFFF",
+  },
   activityContainer: {
     marginTop: 20,
   },
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#28A745",
   },
   activityText: {
     fontSize: 16,
+    marginBottom: 5,
   },
   noActivitiesText: {
     fontSize: 16,

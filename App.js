@@ -5,8 +5,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
 import HomeScreen from "./App/screens/HomeScreen";
 import CalendarScreen from "./App/screens/CalendarScreen";
 import ProfileScreen from "./App/screens/ProfileScreen";
@@ -44,8 +42,8 @@ function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Calendar" component={CalendarScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Chart" component={ChartScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

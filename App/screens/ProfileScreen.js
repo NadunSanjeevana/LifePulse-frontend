@@ -1,107 +1,126 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
-  Button,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
+import Icon from "react-native-vector-icons/FontAwesome";
+import EditProfileModal from "../modal/EditProfileModal"; // Adjust the path as per your project structure
+import { getUserProfile } from "../services/api"; // Adjust the path as necessary
+import { AuthContext } from "../Context/AuthContext";
 
 const ProfileScreen = () => {
-  // Placeholder user data
-  const [user, setUser] = useState({
-    name: "Jane Doe",
-    username: "@janedoe",
-    bio: "Software Developer | UI/UX Designer",
-    location: "New York, USA",
-    followers: 1500,
-    following: 200,
-    profession: "Software Developer",
-    profileImage: require("../Assets/Images/login.png"), // Replace with actual image path
-  });
-
+  const { user, setUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const data = await getUserProfile();
+        setUser(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
+  const handleSave = (editedUser) => {
+    setUser(editedUser);
     setIsEditing(false);
   };
 
-  const handleImagePicker = () => {
-    launchImageLibrary({ mediaType: "photo" }, (response) => {
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.error) {
-        console.log("ImagePicker Error: ", response.error);
-      } else if (response.assets && response.assets.length > 0) {
-        setUser({ ...user, profileImage: { uri: response.assets[0].uri } });
-      }
-    });
-  };
+  if (loading) {
+    return <ActivityIndicator size="large" color="#28A745" />;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.profileHeader}>
-        <TouchableOpacity onPress={handleImagePicker}>
-          <Image source={user.profileImage} style={styles.profileImage} />
+        <TouchableOpacity onPress={handleEdit}>
+          <Image
+            source={{ uri: user.profileImage }}
+            style={styles.profileImage}
+          />
         </TouchableOpacity>
-        {isEditing ? (
-          <>
-            <TextInput
-              style={styles.input}
-              value={user.name}
-              onChangeText={(text) => setUser({ ...user, name: text })}
-              placeholder="Name"
-            />
-            <TextInput
-              style={styles.input}
-              value={user.profession}
-              onChangeText={(text) => setUser({ ...user, profession: text })}
-              placeholder="Profession"
-            />
-            <TextInput
-              style={styles.input}
-              value={user.bio}
-              onChangeText={(text) => setUser({ ...user, bio: text })}
-              placeholder="Bio"
-            />
-            <TextInput
-              style={styles.input}
-              value={user.location}
-              onChangeText={(text) => setUser({ ...user, location: text })}
-              placeholder="Location"
-            />
-            <Button title="Save" onPress={handleSave} />
-          </>
-        ) : (
-          <>
-            <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.profession}>{user.profession}</Text>
-            <Text style={styles.bio}>{user.bio}</Text>
-            <Text style={styles.location}>{user.location}</Text>
-            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-              <Text style={styles.editButtonText}>Edit Profile</Text>
-            </TouchableOpacity>
-          </>
-        )}
+        <Text style={styles.name}>{user.name}</Text>
+        <Text style={styles.profession}>{user.profession}</Text>
+        <Text style={styles.bio}>{user.bio}</Text>
+        <Text style={styles.location}>{user.location}</Text>
+        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{user.followers}</Text>
-          <Text style={styles.statLabel}>Followers</Text>
+      <View style={styles.tipsContainer}>
+        <Text style={styles.sectionTitle}>Work-Life Balance Tips</Text>
+        <View style={styles.tipBox}>
+          <Icon name="leaf" size={20} color="#28A745" />
+          <Text style={styles.tipText}>
+            Take regular breaks during work hours.
+          </Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{user.following}</Text>
-          <Text style={styles.statLabel}>Following</Text>
+        <View style={styles.tipBox}>
+          <Icon name="clock-o" size={20} color="#28A745" />
+          <Text style={styles.tipText}>
+            Set clear boundaries between work and personal time.
+          </Text>
+        </View>
+        <View style={styles.tipBox}>
+          <Icon name="medkit" size={20} color="#28A745" />
+          <Text style={styles.tipText}>
+            Practice mindfulness and relaxation techniques.
+          </Text>
         </View>
       </View>
-    </View>
+      <View style={styles.badgesContainer}>
+        <Text style={styles.sectionTitle}>Achievements</Text>
+        <View style={styles.badge}>
+          <Image
+            source={require("../Assets/Images/badge1.png")}
+            style={styles.badgeImage}
+          />
+          <Text style={styles.badgeText}>Work-Life Balance Novice</Text>
+        </View>
+        <View style={styles.badge}>
+          <Image
+            source={require("../Assets/Images/badge2.png")}
+            style={styles.badgeImage}
+          />
+          <Text style={styles.badgeText}>Work-Life Balance Intermediate</Text>
+        </View>
+        <View style={styles.badge}>
+          <Image
+            source={require("../Assets/Images/badge3.png")}
+            style={styles.badgeImage}
+          />
+          <Text style={styles.badgeText}>Work-Life Balance Expert</Text>
+        </View>
+      </View>
+
+      <EditProfileModal
+        visible={isEditing}
+        onClose={() => setIsEditing(false)}
+        user={user}
+        onSave={handleSave}
+      />
+    </ScrollView>
   );
 };
 
@@ -121,11 +140,14 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 10,
+    borderWidth: 2,
+    borderColor: "#28A745",
   },
   name: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
+    color: "#28A745",
   },
   profession: {
     fontSize: 18,
@@ -136,22 +158,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginBottom: 10,
+    color: "#666666",
   },
   location: {
     fontSize: 16,
     color: "#666666",
     marginBottom: 20,
   },
-  input: {
-    width: "100%",
-    borderColor: "#ccc",
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
   editButton: {
-    backgroundColor: "#1E90FF",
+    backgroundColor: "#28A745",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
@@ -160,20 +175,47 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
   },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  tipsContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: "#E8F5E9",
+    borderRadius: 10,
   },
-  statItem: {
-    alignItems: "center",
-  },
-  statNumber: {
+  sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 10,
+    color: "#28A745",
   },
-  statLabel: {
+  tipBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  tipText: {
+    marginLeft: 10,
+    color: "#333333",
+  },
+  badgesContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: "#E8F5E9",
+    borderRadius: 10,
+  },
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  badgeImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  badgeText: {
     fontSize: 16,
-    color: "#666666",
+    color: "#333333",
   },
 });
 

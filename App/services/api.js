@@ -17,7 +17,6 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => {
@@ -36,6 +35,19 @@ api.interceptors.response.use(
   }
 );
 
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get("/users/profile");
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching user profile:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
 // Sign in function
 export const signIn = async (credentials) => {
   try {
@@ -46,6 +58,58 @@ export const signIn = async (credentials) => {
     throw error.response?.data || error;
   }
 };
+
+// Register function
+export const register = async ({ username, email, password }) => {
+  try {
+    const response = await api.post("/users/register", {
+      username,
+      email,
+      password,
+    });
+    const { token } = response.data;
+
+    // Store the token in AsyncStorage
+    await AsyncStorage.setItem("token", token);
+
+    return response.data; // Return data from the response if needed
+  } catch (error) {
+    console.error(
+      "Error registering user:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+// Update user details function
+export const updateUserDetails = async (updatedUser) => {
+  try {
+    console.log(updatedUser);
+    const response = await api.post("/users/update", updatedUser);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error updating user details:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+// // Fetch user profile
+// export const getUserProfile = async () => {
+//   try {
+//     const response = await api.get("/users/profile");
+//     return response.data;
+//   } catch (error) {
+//     console.error(
+//       "Error fetching user profile:",
+//       error.response?.data || error.message
+//     );
+//     throw error.response?.data || error;
+//   }
+// };
 
 // Task-related functions
 export const getTasksForDate = async (date) => {
