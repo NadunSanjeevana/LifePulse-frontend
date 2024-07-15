@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ActivityModal from "../modal/ActivityModal";
 import { createTask, getTasksForDate } from "../services/api"; // Import the new API function
+import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correc
 
 const HomeScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -74,6 +75,7 @@ const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.dashboard}>
+        <ChatBotButton />
         <View style={styles.backgroundRectangle}>
           <Image
             source={require("../Assets/Images/login.png")}
