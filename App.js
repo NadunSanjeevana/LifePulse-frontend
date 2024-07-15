@@ -9,9 +9,9 @@ import HomeScreen from "./App/screens/HomeScreen";
 import CalendarScreen from "./App/screens/CalendarScreen";
 import ProfileScreen from "./App/screens/ProfileScreen";
 import ChartScreen from "./App/screens/ChartScreen";
-import OnboardScreen from "./App/screens/OnboardingScreen";
-import SignInScreen from "./App/screens/Login";
-import RegisterScreen from "./App/screens/Login";
+import OnboardingScreen from "./App/screens/OnboardingScreen";
+import SignInScreen from "./App/screens/SignInScreen";
+import RegisterScreen from "./App/screens/RegisterScreen";
 import { AuthProvider } from "./App/Context/AuthContext";
 
 const Tab = createBottomTabNavigator();
@@ -42,8 +42,8 @@ function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Calendar" component={CalendarScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Chart" component={ChartScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -52,10 +52,22 @@ function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Onboard">
-          <Stack.Screen name="Onboard" component={OnboardScreen} />
-          <Stack.Screen name="SignIn" component={MainTabs} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Navigator initialRouteName="Onboarding">
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="MainTabs"
             component={MainTabs}

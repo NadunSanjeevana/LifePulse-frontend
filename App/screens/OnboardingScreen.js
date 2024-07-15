@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
 const OnboardingScreen = ({ navigation }) => {
   return (
@@ -85,7 +78,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 10,
     color: "rgba(0, 0, 0, 0.75)",
-    fontFamily: "Poppins",
   },
   description: {
     fontSize: 13,
@@ -94,7 +86,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 48,
     marginBottom: 20,
     color: "rgba(0, 0, 0, 0.74)",
-    fontFamily: "Poppins",
   },
   button: {
     width: 325,
@@ -109,7 +100,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#FFFFFF",
-    fontFamily: "Poppins",
   },
 });
 
