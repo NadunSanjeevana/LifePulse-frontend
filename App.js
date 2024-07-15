@@ -1,3 +1,4 @@
+// App.js
 import "react-native-gesture-handler"; // <- Add this at the top of your entry file
 import * as React from "react";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
@@ -13,6 +14,7 @@ import OnboardingScreen from "./App/screens/OnboardingScreen";
 import SignInScreen from "./App/screens/SignInScreen";
 import RegisterScreen from "./App/screens/RegisterScreen";
 import { AuthProvider } from "./App/Context/AuthContext";
+import ChatBotButton from "./App/Components/ChatBotButton"; // Ensure the path is correct
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

@@ -1,33 +1,74 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
   Button,
-  Modal,
-  TextInput,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import WelcomeHeader from "../Components/WelcomeHeader";
 import SearchBar from "../Components/SearchBar";
 import Slider from "../Components/Slider";
 import { AuthContext } from "../Context/AuthContext";
+import { getTasksForDate, createTask } from "../services/api";
+import ActivityModal from "../modal/ActivityModal"; // Adjust the path as per your project structure
 
-const CalenderScreen = () => {
+const CalendarScreen = () => {
   const { userData } = useContext(AuthContext);
   const [selectedDate, setSelectedDate] = useState("");
-  const [activities, setActivities] = useState({});
+  const [tasks, setTasks] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newActivity, setNewActivity] = useState("");
 
-  const addActivity = () => {
-    setActivities({
-      ...activities,
-      [selectedDate]: [...(activities[selectedDate] || []), newActivity],
-    });
-    setNewActivity("");
-    setModalVisible(false);
+  useEffect(() => {
+    if (selectedDate) {
+      fetchTasks(selectedDate);
+    }
+  }, [selectedDate]);
+
+  const fetchTasks = async (date) => {
+    try {
+      const tasksForDate = await getTasksForDate(date);
+      setTasks(tasksForDate);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      // Handle error (e.g., show error message)
+    }
+  };
+
+  const addActivity = async (newActivity, timeFrom, timeTo) => {
+    const newEntry = {
+      task: newActivity,
+      timeFrom,
+      timeTo,
+      date: selectedDate,
+    };
+
+    try {
+      const savedActivity = await createTask(newEntry); // Save to backend
+      const formattedActivity = {
+        task: savedActivity.description,
+        timeFrom: new Date(savedActivity.timeFrom).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        timeTo: new Date(savedActivity.timeTo).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        date: selectedDate,
+      };
+      setTasks((prevTasks) => [...prevTasks, formattedActivity]); // Update tasks state
+    } catch (error) {
+      console.error("Failed to add activity:", error);
+    }
+  };
+
+  // Function to check if the selected date is today or future
+  const isTodayOrFutureDate = (date) => {
+    const today = new Date().setHours(0, 0, 0, 0); // Today's date without time
+    const selected = new Date(date).setHours(0, 0, 0, 0); // Selected date without time
+    return selected >= today;
   };
 
   return (
@@ -63,36 +104,41 @@ const CalenderScreen = () => {
           textDayHeaderFontSize: 14,
         }}
       />
+      {selectedDate && isTodayOrFutureDate(selectedDate) && (
+        <View style={styles.activityContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.addButtonText}>Add Activity</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Display fetched tasks */}
       <View style={styles.activityContainer}>
-        <Text style={styles.dateText}>Activities for {selectedDate}:</Text>
-        {activities[selectedDate]?.length > 0 ? (
-          activities[selectedDate].map((activity, index) => (
-            <Text key={index} style={styles.activityText}>
-              {activity}
-            </Text>
+        <Text style={styles.dateText}>Tasks for {selectedDate}:</Text>
+        {tasks.length > 0 ? (
+          tasks.map((task, index) => (
+            <View key={index} style={styles.taskContainer}>
+              <Text style={styles.taskText}>{task.task}</Text>
+              <Text style={styles.taskText}>
+                {task.timeFrom} - {task.timeTo}
+              </Text>
+            </View>
           ))
         ) : (
           <Text style={styles.noActivitiesText}>
-            No activities for this date.
+            No tasks scheduled for this date.
           </Text>
         )}
-        <Button title="Add Activity" onPress={() => setModalVisible(true)} />
       </View>
 
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              placeholder="Enter Activity"
-              value={newActivity}
-              onChangeText={setNewActivity}
-              style={styles.textInput}
-            />
-            <Button title="Add" onPress={addActivity} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
+      <ActivityModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        addActivity={addActivity}
+      />
     </ScrollView>
   );
 };
@@ -111,33 +157,34 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#28A745",
   },
-  activityText: {
+  taskContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#CCCCCC",
+    paddingVertical: 10,
+  },
+  taskText: {
     fontSize: 16,
-    marginBottom: 5,
+    color: "#333333",
   },
   noActivitiesText: {
     fontSize: 16,
     color: "gray",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "gray",
-    marginBottom: 10,
-    padding: 10,
+  addButton: {
+    backgroundColor: "#28A745",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    marginTop: 10,
+  },
+  addButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 
-export default CalenderScreen;
+export default CalendarScreen;
