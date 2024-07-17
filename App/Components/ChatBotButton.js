@@ -1,32 +1,82 @@
-// ChatBotButton.js
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   Modal,
-  Text,
-  TextInput,
-  ScrollView,
   Button,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 
 const ChatBotButton = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
 
-  const sendMessage = async () => {
-    const userMessage = { sender: "user", text: input };
-    setMessages([...messages, userMessage]);
+  useEffect(() => {
+    setMessages([
+      {
+        _id: 1,
+        text: "Hello! How can I assist you today?",
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: "Chatbot",
+          avatar: "https://facebook.github.io/react/img/logo_og.png",
+        },
+      },
+    ]);
+  }, []);
+
+  const onSend = useCallback((newMessages = []) => {
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, newMessages)
+    );
 
     // Replace with actual API call to your chatbot service
-    const response = await fetchChatbotResponse(input);
+    const response = fetchChatbotResponse(newMessages[0].text).then(
+      (response) => {
+        const botMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: response,
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: "Chatbot",
+            avatar: "https://placeimg.com/140/140/any",
+          },
+        };
+        setMessages((prevMessages) =>
+          GiftedChat.append(prevMessages, [botMessage])
+        );
+      }
+    );
+  }, []);
 
-    const botMessage = { sender: "bot", text: response };
-    setMessages((prevMessages) => [...prevMessages, botMessage]);
-    setInput("");
+  const fetchChatbotResponse = async (input) => {
+    // Mock API call
+    // Replace with actual API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("This is a response from the chatbot.");
+      }, 1000);
+    });
+  };
+
+  const renderBubble = (props) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#28A745",
+          },
+          left: {
+            backgroundColor: "#ECECEC",
+          },
+        }}
+      />
+    );
   };
 
   return (
@@ -43,44 +93,24 @@ const ChatBotButton = () => {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <ScrollView style={styles.messagesContainer}>
-            {messages.map((message, index) => (
-              <Text
-                key={index}
-                style={[
-                  styles.message,
-                  message.sender === "user"
-                    ? styles.userMessage
-                    : styles.botMessage,
-                ]}
-              >
-                {message.text}
-              </Text>
-            ))}
-          </ScrollView>
-          <TextInput
-            style={styles.input}
-            value={input}
-            onChangeText={setInput}
-            placeholder="Type a message..."
+        <GiftedChat
+          messages={messages}
+          onSend={(messages) => onSend(messages)}
+          user={{
+            _id: 1,
+          }}
+          renderBubble={renderBubble}
+        />
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Close"
+            onPress={() => setModalVisible(false)}
+            color="#28A745"
           />
-          <Button title="Send" onPress={sendMessage} />
-          <Button title="Close" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
     </>
   );
-};
-
-const fetchChatbotResponse = async (input) => {
-  // Mock API call
-  // Replace with actual API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("This is a response from the chatbot.");
-    }, 1000);
-  });
 };
 
 const styles = StyleSheet.create({
@@ -98,31 +128,10 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
   },
-  messagesContainer: {
-    flex: 1,
-  },
-  message: {
-    padding: 8,
-    marginVertical: 4,
-    borderRadius: 4,
-  },
-  userMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#DCF8C6",
-  },
-  botMessage: {
-    alignSelf: "flex-start",
-    backgroundColor: "#ECECEC",
-  },
-  input: {
-    padding: 8,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 4,
-    marginBottom: 8,
+  buttonContainer: {
+    padding: 10,
+    backgroundColor: "white",
   },
 });
 
