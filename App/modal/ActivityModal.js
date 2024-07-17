@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import { SelectList } from "react-native-dropdown-select-list";
 
 const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
   const [newActivity, setNewActivity] = useState("");
@@ -17,6 +18,7 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
   const [isTimeFromPickerVisible, setTimeFromPickerVisibility] =
     useState(false);
   const [isTimeToPickerVisible, setTimeToPickerVisibility] = useState(false);
+  const [selected, setSelected] = React.useState("");
 
   const showTimeFromPicker = () => {
     setTimeFromPickerVisibility(true);
@@ -47,6 +49,11 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
     );
     hideTimeToPicker();
   };
+  const data = [
+    { key: "1", value: "Leisure" },
+    { key: "2", value: "Work" },
+    { key: "3", value: "Other" },
+  ];
 
   const handleAddActivity = () => {
     addActivity(newActivity, timeFrom, timeTo);
@@ -66,12 +73,20 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
             onChangeText={setNewActivity}
             style={styles.textInput}
           />
+          <SelectList
+            setSelected={(val) => setSelected(val)}
+            data={data}
+            save="value"
+            placeholder="Categories"
+            style={styles.textInput}
+          />
+
           <TouchableOpacity onPress={showTimeFromPicker}>
             <TextInput
               placeholder="Time From"
               value={timeFrom}
               editable={false}
-              style={styles.textInput}
+              style={[styles.textInput, ,]}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={showTimeToPicker}>
@@ -79,7 +94,7 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
               placeholder="Time To"
               value={timeTo}
               editable={false}
-              style={styles.textInput}
+              style={[styles.textInput, ,]}
             />
           </TouchableOpacity>
           <Button title="Add" onPress={handleAddActivity} />
@@ -122,6 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
+    marginTop: 5,
   },
 });
 
