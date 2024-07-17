@@ -5,58 +5,77 @@ import { BarChart, LineChart, PieChart } from "react-native-chart-kit";
 const screenWidth = Dimensions.get("window").width;
 
 const ChartScreen = () => {
-  const barChartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  const workLeisureData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43],
+        label: "Work",
+        data: [8, 9, 7, 8, 6, 4, 0],
+        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+      },
+      {
+        label: "Leisure",
+        data: [2, 3, 4, 3, 5, 6, 8],
+        color: (opacity = 1) => `rgba(34, 202, 236, ${opacity})`,
       },
     ],
   };
 
-  const lineChartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  const sleepData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
-        data: [20, 10, 4, 56, 87, 90],
+        data: [7, 6, 8, 7, 7.5, 8, 9],
         strokeWidth: 2,
       },
     ],
   };
 
-  const pieChartData = [
+  const stressData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        data: [3, 4, 5, 6, 4, 3, 2],
+        strokeWidth: 2,
+      },
+    ],
+  };
+
+  const productivityData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    datasets: [
+      {
+        data: [80, 90, 70, 85, 95],
+      },
+    ],
+  };
+
+  const exerciseData = [
     {
-      name: "Seoul",
-      population: 21500000,
+      name: "Running",
+      population: 40,
       color: "rgba(131, 167, 234, 1)",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
     {
-      name: "Toronto",
-      population: 2800000,
+      name: "Cycling",
+      population: 30,
       color: "#F00",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
     {
-      name: "Beijing",
-      population: 527612,
+      name: "Yoga",
+      population: 20,
       color: "red",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
     {
-      name: "New York",
-      population: 8538000,
+      name: "Gym",
+      population: 10,
       color: "#ffffff",
-      legendFontColor: "#7F7F7F",
-      legendFontSize: 15,
-    },
-    {
-      name: "Moscow",
-      population: 11920000,
-      color: "rgb(0, 0, 255)",
       legendFontColor: "#7F7F7F",
       legendFontSize: 15,
     },
@@ -64,23 +83,24 @@ const ChartScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Chart Screen</Text>
+      <Text style={styles.header}>Work-Life Balance Charts</Text>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Bar Chart</Text>
+        <Text style={styles.chartTitle}>Work vs Leisure Time</Text>
         <BarChart
-          data={barChartData}
+          data={workLeisureData}
           width={screenWidth - 40}
           height={220}
           chartConfig={chartConfig}
           style={styles.chart}
+          verticalLabelRotation={30}
         />
       </View>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Line Chart</Text>
+        <Text style={styles.chartTitle}>Daily Sleep Patterns</Text>
         <LineChart
-          data={lineChartData}
+          data={sleepData}
           width={screenWidth - 40}
           height={220}
           chartConfig={chartConfig}
@@ -89,10 +109,31 @@ const ChartScreen = () => {
       </View>
 
       <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Pie Chart</Text>
+        <Text style={styles.chartTitle}>Stress Levels Over Time</Text>
+        <LineChart
+          data={stressData}
+          width={screenWidth - 40}
+          height={220}
+          chartConfig={chartConfig}
+          style={styles.chart}
+        />
+      </View>
 
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Productivity Levels</Text>
+        <BarChart
+          data={productivityData}
+          width={screenWidth - 40}
+          height={220}
+          chartConfig={chartConfig}
+          style={styles.chart}
+        />
+      </View>
+
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Exercise Frequency</Text>
         <PieChart
-          data={pieChartData}
+          data={exerciseData}
           width={screenWidth - 40}
           height={220}
           chartConfig={chartConfig}
