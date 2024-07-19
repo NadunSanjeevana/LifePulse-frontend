@@ -6,13 +6,19 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Platform,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ActivityModal from "../modal/ActivityModal";
-import { createTask, getTasksForDate } from "../services/api"; // Import the new API function
-import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correc
+import {
+  createTask,
+  getTasksForDate,
+  importCalendarEvents,
+} from "../services/api";
+import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correct
+import * as DocumentPicker from "expo-document-picker"; // For picking documents
 
 const HomeScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -73,10 +79,27 @@ const HomeScreen = () => {
     }
   };
 
+  const handleFileUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+        copyToCacheDirectory: true,
+      });
+      console.log(result);
+      if (!result.canceled) {
+        const { uri } = result.assets[0];
+        const events = await importCalendarEvents(uri);
+      }
+    } catch (error) {
+      console.error("Failed to upload calendar file:", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.dashboard}>
         <ChatBotButton />
+
         <View style={styles.backgroundRectangle}>
           <Image
             source={require("../Assets/Images/login.png")}
@@ -99,6 +122,12 @@ const HomeScreen = () => {
             color="#2D8F95"
             style={styles.calendarIcon}
           />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.uploadButton}
+          onPress={handleFileUpload}
+        >
+          <Icon name="upload" size={24} color="#2D8F95" />
         </TouchableOpacity>
       </View>
 
@@ -213,6 +242,18 @@ const styles = StyleSheet.create({
   },
   calendarIcon: {
     marginLeft: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "rgba(0, 0, 0, 0.25)",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 4,
+    marginLeft: 15,
   },
   tasksList: {
     margin: 20,
@@ -257,6 +298,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "rgba(0, 0, 0, 0.25)",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 4,
+    marginLeft: 15,
+  },
+  uploadButton: {
     backgroundColor: "#FFFFFF",
     borderRadius: 50,
     padding: 10,

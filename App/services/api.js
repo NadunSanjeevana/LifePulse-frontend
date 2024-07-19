@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native"; // Import Platform from react-native
 
 const API_BASE_URL = "http://192.168.8.197:3000/api"; // Replace with your backend URL
 
@@ -162,5 +163,28 @@ export const getWeeklyWorkLeisureSummary = async (startDate, endDate) => {
       error.response?.data || error.message
     );
     throw error.response?.data || error;
+  }
+};
+
+export const importCalendarEvents = async (uri) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", {
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+      name: "calendar.ics",
+      type: "text/calendar",
+    });
+
+    const response = await api.post("tasks/import-calendar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to import calendar events:", error);
+    throw error;
   }
 };
