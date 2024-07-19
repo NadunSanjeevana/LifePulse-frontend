@@ -18,7 +18,7 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
   const [isTimeFromPickerVisible, setTimeFromPickerVisibility] =
     useState(false);
   const [isTimeToPickerVisible, setTimeToPickerVisibility] = useState(false);
-  const [selected, setSelected] = React.useState("");
+  const [category, setCategory] = React.useState("");
 
   const showTimeFromPicker = () => {
     setTimeFromPickerVisibility(true);
@@ -52,14 +52,16 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
   const data = [
     { key: "1", value: "Leisure" },
     { key: "2", value: "Work" },
+    { key: "2", value: "Sleep" },
     { key: "3", value: "Other" },
   ];
 
   const handleAddActivity = () => {
-    addActivity(newActivity, timeFrom, timeTo);
+    addActivity(newActivity, timeFrom, timeTo, category);
     setNewActivity("");
     setTimeFrom("");
     setTimeTo("");
+    setCategory("");
     setModalVisible(false);
   };
 
@@ -74,7 +76,7 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
             style={styles.textInput}
           />
           <SelectList
-            setSelected={(val) => setSelected(val)}
+            setSelected={(val) => setCategory(val)}
             data={data}
             save="value"
             placeholder="Categories"
