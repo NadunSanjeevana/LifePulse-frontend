@@ -6,28 +6,32 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Button,
   Image,
+  Alert,
+  Button as RNButton,
 } from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
-import { updateUserDetails } from "../services/api"; // Import the new API function
+import * as ImagePicker from "expo-image-picker"; // Import expo-image-picker
+import { updateUserDetails } from "../services/api"; // Adjust the path as necessary
 
 const EditProfileModal = ({ visible, onClose, user, onSave }) => {
   const [editedUser, setEditedUser] = useState(user);
+  const [image, setImage] = useState(null); // State for the image
 
-  const handleImagePicker = () => {
-    launchImageLibrary({ mediaType: "photo" }, (response) => {
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.error) {
-        console.log("ImagePicker Error: ", response.error);
-      } else if (response.assets && response.assets.length > 0) {
-        setEditedUser({
-          ...editedUser,
-          profileImage: { uri: response.assets[0].uri },
-        });
+  const handleImagePicker = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      setImage(result.uri);
+      if (!result.cancelled) {
+        setEditedUser({ ...editedUser, profileImage: result.uri });
       }
-    });
+    } catch (error) {
+      console.error("Error picking image:", error);
+    }
   };
 
   const handleSave = async () => {
@@ -52,10 +56,20 @@ const EditProfileModal = ({ visible, onClose, user, onSave }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <TouchableOpacity onPress={handleImagePicker}>
-            <Image
-              source={editedUser.profileImage}
-              style={styles.profileImage}
-            />
+            {/* Display selected image */}
+            {editedUser.profileImage && (
+              <Image
+                source={{ uri: editedUser.profileImage }}
+                style={styles.profileImage}
+              />
+            )}
+            {/* Display default image if none selected */}
+            {!editedUser.profileImage && (
+              <Image
+                source={require("../Assets/Images/login.png")}
+                style={styles.profileImage}
+              />
+            )}
           </TouchableOpacity>
           <TextInput
             style={styles.input}

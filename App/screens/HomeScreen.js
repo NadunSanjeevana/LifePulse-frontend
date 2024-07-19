@@ -38,9 +38,10 @@ const HomeScreen = () => {
     }
   };
 
-  const addActivity = async (newActivity, timeFrom, timeTo) => {
+  const addActivity = async (newActivity, timeFrom, timeTo, category) => {
     const newEntry = {
       task: newActivity,
+      category,
       timeFrom,
       timeTo,
       date: selectedDate,

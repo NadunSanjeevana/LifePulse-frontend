@@ -150,4 +150,17 @@ export const createTask = async (task) => {
   }
 };
 
-// Add more API functions as needed
+export const getWeeklyWorkLeisureSummary = async (startDate, endDate) => {
+  try {
+    const response = await api.get(
+      `/tasks/weekly-summary?startDate=${startDate}&endDate=${endDate}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching weekly summary:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
