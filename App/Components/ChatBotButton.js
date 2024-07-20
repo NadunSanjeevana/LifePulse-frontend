@@ -22,7 +22,7 @@ const ChatBotButton = () => {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: "https://facebook.github.io/react/img/logo_og.png",
+          avatar: "https://placeimg.com/140/140/any",
         },
       },
     ]);
@@ -33,34 +33,46 @@ const ChatBotButton = () => {
       GiftedChat.append(previousMessages, newMessages)
     );
 
+    const messageText = newMessages[0].text;
+
     // Replace with actual API call to your chatbot service
-    const response = fetchChatbotResponse(newMessages[0].text).then(
-      (response) => {
-        const botMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: response,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: "Chatbot",
-            avatar: "https://placeimg.com/140/140/any",
-          },
-        };
-        setMessages((prevMessages) =>
-          GiftedChat.append(prevMessages, [botMessage])
-        );
-      }
-    );
+    fetchChatbotResponse(messageText).then((response) => {
+      const botMessage = {
+        _id: Math.random().toString(36).substring(7),
+        text: response,
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: "Chatbot",
+          avatar: "https://placeimg.com/140/140/any",
+        },
+      };
+      setMessages((prevMessages) =>
+        GiftedChat.append(prevMessages, [botMessage])
+      );
+    });
   }, []);
 
   const fetchChatbotResponse = async (input) => {
-    // Mock API call
-    // Replace with actual API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("This is a response from the chatbot.");
-      }, 1000);
-    });
+    try {
+      const response = await fetch("http://192.168.8.197:8000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error("Failed to fetch chatbot response:", error);
+      return "Sorry, I am unable to respond at the moment.";
+    }
   };
 
   const renderBubble = (props) => {
