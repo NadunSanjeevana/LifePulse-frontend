@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
 
 const RegisterScreen = ({ navigation }) => {
@@ -9,16 +9,37 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+
   const handleRegister = async () => {
-    if (password === confirmPassword) {
-      const isRegistered = await register({ email, username, password });
-      if (isRegistered) {
-        navigation.navigate("MainTabs");
-      } else {
-        alert("Registration failed");
-      }
+    if (!username || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "All fields are required");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    const isRegistered = await register({ email, username, password });
+    if (isRegistered) {
+      navigation.navigate("MainTabs");
     } else {
-      alert("Passwords do not match");
+      Alert.alert("Error", "Registration failed");
     }
   };
 
@@ -35,6 +56,7 @@ const RegisterScreen = ({ navigation }) => {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
         style={styles.input}
       />
       <TextInput
