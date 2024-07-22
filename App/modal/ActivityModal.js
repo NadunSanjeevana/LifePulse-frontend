@@ -1,4 +1,3 @@
-// ActivityModal.js
 import React, { useState } from "react";
 import {
   View,
@@ -7,6 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Text,
+  Alert,
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -49,14 +50,23 @@ const ActivityModal = ({ modalVisible, setModalVisible, addActivity }) => {
     );
     hideTimeToPicker();
   };
+
   const data = [
     { key: "1", value: "Leisure" },
     { key: "2", value: "Work" },
-    { key: "2", value: "Sleep" },
-    { key: "3", value: "Other" },
+    { key: "3", value: "Sleep" },
+    { key: "4", value: "Other" },
   ];
 
   const handleAddActivity = () => {
+    const timeFromDate = new Date(`1970-01-01T${timeFrom}:00`);
+    const timeToDate = new Date(`1970-01-01T${timeTo}:00`);
+
+    if (timeFromDate >= timeToDate) {
+      Alert.alert("Invalid Time", "Start time cannot be later than end time.");
+      return;
+    }
+
     addActivity(newActivity, timeFrom, timeTo, category);
     setNewActivity("");
     setTimeFrom("");
