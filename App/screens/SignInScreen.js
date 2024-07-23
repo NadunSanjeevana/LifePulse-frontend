@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
 
@@ -14,12 +15,27 @@ const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+
   const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "All fields are required");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
     const isSignIn = await signIn({ email, password });
     if (isSignIn) {
       navigation.navigate("MainTabs");
     } else {
-      alert("Email or Password Incorrect");
+      Alert.alert("Error", "Email or Password Incorrect");
     }
   };
 
@@ -30,6 +46,7 @@ const SignInScreen = ({ navigation }) => {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
         style={styles.input}
       />
       <TextInput
