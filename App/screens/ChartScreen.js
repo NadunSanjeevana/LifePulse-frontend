@@ -43,7 +43,6 @@ const ChartScreen = () => {
           startDate.toISOString().split("T")[0],
           endDate.toISOString().split("T")[0]
         );
-        console.log(workLeisureResponse);
         const sanitizedData = sanitizeData(workLeisureResponse);
         setWorkLeisureData(formatWorkLeisureDataForChart(sanitizedData));
         setSleepData(formatSleepDataForChart(sanitizedData));
