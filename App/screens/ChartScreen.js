@@ -14,26 +14,39 @@ import { getWeeklyWorkLeisureSummary } from "../services/api"; // Import the API
 
 const screenWidth = Dimensions.get("window").width;
 
+const getMonday = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+  return new Date(d.setDate(diff));
+};
+
+const getSunday = (date) => {
+  const d = new Date(getMonday(date));
+  return new Date(d.setDate(d.getDate() + 6));
+};
+
 const ChartScreen = () => {
   const [workLeisureData, setWorkLeisureData] = useState(null);
   const [sleepData, setSleepData] = useState(null);
-  const [startDate, setStartDate] = useState(new Date("2024-07-15")); // Initial start date
-  const [endDate, setEndDate] = useState(new Date("2024-07-21")); // Initial end date
+  const [startDate, setStartDate] = useState(getMonday(new Date()));
+  const [endDate, setEndDate] = useState(getSunday(new Date()));
   const [loading, setLoading] = useState(true);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const workLeisureResponse = await getWeeklyWorkLeisureSummary(
           startDate.toISOString().split("T")[0],
           endDate.toISOString().split("T")[0]
         );
         console.log(workLeisureResponse);
-        setWorkLeisureData(formatWorkLeisureDataForChart(workLeisureResponse));
-        setSleepData(formatSleepDataForChart(workLeisureResponse));
-        console.log(sleepData);
+        const sanitizedData = sanitizeData(workLeisureResponse);
+        setWorkLeisureData(formatWorkLeisureDataForChart(sanitizedData));
+        setSleepData(formatSleepDataForChart(sanitizedData));
       } catch (error) {
         console.error("Error fetching data: ", error);
       } finally {
@@ -43,6 +56,19 @@ const ChartScreen = () => {
 
     fetchData();
   }, [startDate, endDate]);
+
+  const sanitizeData = (data) => {
+    const sanitizedData = {};
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    days.forEach((day) => {
+      sanitizedData[day] = {
+        Work: data[day]?.Work || 0,
+        Leisure: data[day]?.Leisure || 0,
+        Sleep: data[day]?.Sleep || 0,
+      };
+    });
+    return sanitizedData;
+  };
 
   const formatWorkLeisureDataForChart = (data) => {
     const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -124,7 +150,8 @@ const ChartScreen = () => {
           display="default"
           onChange={(event, selectedDate) => {
             const currentDate = selectedDate || startDate;
-            setStartDate(currentDate);
+            setStartDate(getMonday(currentDate));
+            setEndDate(getSunday(currentDate));
             setShowStartDatePicker(false);
           }}
         />
@@ -137,7 +164,8 @@ const ChartScreen = () => {
           display="default"
           onChange={(event, selectedDate) => {
             const currentDate = selectedDate || endDate;
-            setEndDate(currentDate);
+            setStartDate(getMonday(currentDate));
+            setEndDate(getSunday(currentDate));
             setShowEndDatePicker(false);
           }}
         />
