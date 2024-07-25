@@ -8,26 +8,36 @@ import {
   TextInput,
   Image,
   Alert,
-  Button as RNButton,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"; // Import expo-image-picker
-import { updateUserDetails } from "../services/api"; // Adjust the path as necessary
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { updateUserDetails } from "../services/api";
 
 const EditProfileModal = ({ visible, onClose, user, onSave }) => {
   const [editedUser, setEditedUser] = useState(user);
-  const [image, setImage] = useState(null); // State for the image
+  const [image, setImage] = useState(null);
 
   const handleImagePicker = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
-      setImage(result.uri);
+
       if (!result.cancelled) {
-        setEditedUser({ ...editedUser, profileImage: result.uri });
+        const localUri = result.assets[0].uri;
+        const filename = localUri.split("/").pop();
+        const newPath = FileSystem.documentDirectory + filename;
+
+        await FileSystem.copyAsync({
+          from: localUri,
+          to: newPath,
+        });
+
+        setImage(newPath);
+        setEditedUser({ ...editedUser, profileImage: newPath });
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -36,9 +46,8 @@ const EditProfileModal = ({ visible, onClose, user, onSave }) => {
 
   const handleSave = async () => {
     try {
-      // Call API to update user details
       await updateUserDetails(editedUser);
-      onSave(editedUser); // Update local state after successful save
+      onSave(editedUser);
       Alert.alert("Success", "Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -56,14 +65,12 @@ const EditProfileModal = ({ visible, onClose, user, onSave }) => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <TouchableOpacity onPress={handleImagePicker}>
-            {/* Display selected image */}
             {editedUser.profileImage && (
               <Image
                 source={{ uri: editedUser.profileImage }}
                 style={styles.profileImage}
               />
             )}
-            {/* Display default image if none selected */}
             {!editedUser.profileImage && (
               <Image
                 source={require("../Assets/Images/login.png")}

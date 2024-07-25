@@ -16,8 +16,12 @@ const AuthProvider = ({ children }) => {
     try {
       const data = await apiSignIn(credentials);
       await AsyncStorage.setItem("token", data.token); // Storing the token
-      setUser({ email: credentials.email, userName: data.userName });
-      console.log("User registered:", user);
+      setUser({
+        email: credentials.email,
+        userName: data.userName,
+        profileImage: data.profileImage,
+      });
+
       return true;
     } catch (err) {
       setError(err.message);
@@ -33,7 +37,11 @@ const AuthProvider = ({ children }) => {
     try {
       const data = await apiRegister(credentials);
       await AsyncStorage.setItem("token", data.token); // Storing the token
-      setUser({ email: credentials.email, userName: data.userName });
+      setUser({
+        email: credentials.email,
+        userName: data.userName,
+        profileImage: data.profileImage,
+      });
 
       return true;
     } catch (err) {

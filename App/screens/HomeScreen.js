@@ -18,7 +18,6 @@ import {
   importCalendarEvents,
 } from "../services/api";
 import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correct
-import * as DocumentPicker from "expo-document-picker"; // For picking documents
 import { AppGradient } from "../Components/AppGradient";
 
 const HomeScreen = () => {
@@ -29,7 +28,6 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log(user);
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0]; // Format date as "YYYY-MM-DD"
     setSelectedDate(formattedDate);
@@ -81,22 +79,6 @@ const HomeScreen = () => {
     }
   };
 
-  const handleFileUpload = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-        copyToCacheDirectory: true,
-      });
-      console.log(result);
-      if (!result.canceled) {
-        const { uri } = result.assets[0];
-        const events = await importCalendarEvents(uri);
-      }
-    } catch (error) {
-      console.error("Failed to upload calendar file:", error);
-    }
-  };
-
   return (
     <AppGradient>
       <ScrollView style={styles.container}>
@@ -105,11 +87,11 @@ const HomeScreen = () => {
 
           <View style={styles.backgroundRectangle}>
             <Image
-              source={require("../Assets/Images/login.png")}
+              source={user.profileImage ? { uri: user.profileImage } : null}
               style={styles.profileImage}
             />
             <Text style={styles.welcomeText}>
-              Welcome, {user ? user.userName : "Guest"}
+              Welcome {user ? user.userName : "Guest"}!
             </Text>
           </View>
           <View style={styles.shape}></View>
@@ -129,12 +111,6 @@ const HomeScreen = () => {
               color="#2D8F95"
               style={styles.calendarIcon}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={handleFileUpload}
-          >
-            <Icon name="upload" size={24} color="#2D8F95" />
           </TouchableOpacity>
         </View>
 
@@ -224,7 +200,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 18,
     letterSpacing: 0.06,
-    color: "#FFFFFF",
+    color: "#d3f9d8",
     marginTop: 10,
   },
   sectionTitle: {
@@ -250,7 +226,7 @@ const styles = StyleSheet.create({
   },
   calendarIcon: {
     marginLeft: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#d3f9d8",
     borderRadius: 50,
     padding: 10,
     shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -306,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#d3f9d8",
     borderRadius: 50,
     padding: 10,
     shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -319,22 +295,9 @@ const styles = StyleSheet.create({
     elevation: 4,
     marginLeft: 15,
   },
-  uploadButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
-    padding: 10,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
-    marginLeft: 15,
-  },
+
   calendarButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#d3f9d8",
     borderRadius: 50,
     padding: 10,
     shadowColor: "rgba(0, 0, 0, 0.25)",
