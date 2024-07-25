@@ -8,9 +8,10 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { StackedBarChart, LineChart } from "react-native-chart-kit";
+import { BarChart, LineChart } from "react-native-gifted-charts";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getWeeklyWorkLeisureSummary } from "../services/api"; // Import the API functions
+import { AppGradient } from "../Components/AppGradient";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -27,8 +28,8 @@ const getSunday = (date) => {
 };
 
 const ChartScreen = () => {
-  const [workLeisureData, setWorkLeisureData] = useState(null);
-  const [sleepData, setSleepData] = useState(null);
+  const [workLeisureData, setWorkLeisureData] = useState([]);
+  const [sleepData, setSleepData] = useState([]);
   const [startDate, setStartDate] = useState(getMonday(new Date()));
   const [endDate, setEndDate] = useState(getSunday(new Date()));
   const [loading, setLoading] = useState(true);
@@ -61,9 +62,9 @@ const ChartScreen = () => {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     days.forEach((day) => {
       sanitizedData[day] = {
-        Work: data[day]?.Work || 0,
-        Leisure: data[day]?.Leisure || 0,
-        Sleep: data[day]?.Sleep || 0,
+        Work: data[day] && data[day].Work ? data[day].Work : 0,
+        Leisure: data[day] && data[day].Leisure ? data[day].Leisure : 0,
+        Sleep: data[day] && data[day].Sleep ? data[day].Sleep : 0,
       };
     });
     return sanitizedData;
@@ -71,31 +72,38 @@ const ChartScreen = () => {
 
   const formatWorkLeisureDataForChart = (data) => {
     const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    const workData = labels.map((day) => data[day]?.Work || 0);
-    const leisureData = labels.map((day) => data[day]?.Leisure || 0);
 
-    return {
-      labels,
-      legend: ["Work", "Leisure"],
-      data: labels.map((_, index) => [workData[index], leisureData[index]]),
-      barColors: ["#4CAF50", "#FFFFFF"],
-    };
+    const formattedData = [];
+
+    labels.forEach((day) => {
+      formattedData.push(
+        {
+          value: data[day]?.Work || 0,
+          label: day,
+          frontColor: "#4CAF50", // Color for work bars
+          labelTextStyle: { color: "#333" },
+          spacing: 10,
+          labelWidth: 30,
+        },
+        {
+          value: data[day]?.Leisure || 0,
+          frontColor: "#FFC107", // Color for leisure bars
+        }
+      );
+    });
+
+    return formattedData;
   };
 
   const formatSleepDataForChart = (data) => {
     const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    const sleepHours = labels.map((day) => data[day]?.Sleep || 0);
+    const sleepData = labels.map((day) => ({
+      value: data[day]?.Sleep || 0,
+      label: day,
+      frontColor: "#00BFFF", // Color for sleep data
+    }));
 
-    return {
-      labels,
-      datasets: [
-        {
-          data: sleepHours,
-          color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`, // Green color
-          strokeWidth: 2,
-        },
-      ],
-    };
+    return sleepData;
   };
 
   const handleShowStartDatePicker = () => {
@@ -112,103 +120,141 @@ const ChartScreen = () => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
   }
 
-  if (!workLeisureData || !sleepData) {
-    return <Text>Unable to fetch data</Text>;
+  if (!workLeisureData.length || !sleepData.length) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Unable to fetch data</Text>
+      </View>
+    );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Work-Life Balance Charts</Text>
+    <AppGradient>
+      <ScrollView style={styles.container}>
+        <Text style={styles.header}>Work-Life Balance Charts</Text>
 
-      <View style={styles.datePickerContainer}>
-        <TouchableOpacity
-          onPress={handleShowStartDatePicker}
-          style={styles.dateButton}
-        >
-          <Text style={styles.datePickerText}>
-            Start Date: {startDate.toLocaleDateString()}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleShowEndDatePicker}
-          style={styles.dateButton}
-        >
-          <Text style={styles.datePickerText}>
-            End Date: {endDate.toLocaleDateString()}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.datePickerContainer}>
+          <TouchableOpacity
+            onPress={handleShowStartDatePicker}
+            style={styles.dateButton}
+          >
+            <Text style={styles.datePickerText}>
+              Start Date: {startDate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleShowEndDatePicker}
+            style={styles.dateButton}
+          >
+            <Text style={styles.datePickerText}>
+              End Date: {endDate.toLocaleDateString()}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      {showStartDatePicker && (
-        <DateTimePicker
-          value={startDate}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || startDate;
-            setStartDate(getMonday(currentDate));
-            setEndDate(getSunday(currentDate));
-            setShowStartDatePicker(false);
-          }}
-        />
-      )}
+        {showStartDatePicker && (
+          <DateTimePicker
+            value={startDate}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || startDate;
+              setStartDate(getMonday(currentDate));
+              setEndDate(getSunday(currentDate));
+              setShowStartDatePicker(false);
+            }}
+          />
+        )}
 
-      {showEndDatePicker && (
-        <DateTimePicker
-          value={endDate}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || endDate;
-            setStartDate(getMonday(currentDate));
-            setEndDate(getSunday(currentDate));
-            setShowEndDatePicker(false);
-          }}
-        />
-      )}
+        {showEndDatePicker && (
+          <DateTimePicker
+            value={endDate}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || endDate;
+              setStartDate(getMonday(currentDate));
+              setEndDate(getSunday(currentDate));
+              setShowEndDatePicker(false);
+            }}
+          />
+        )}
 
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Work vs Leisure Time</Text>
-        <StackedBarChart
-          data={workLeisureData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-          verticalLabelRotation={30}
-          hideLegend={false}
-          showBarTops={false}
-        />
-      </View>
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Work vs Leisure Time</Text>
+          <BarChart
+            data={workLeisureData}
+            barWidth={10}
+            spacing={10}
+            yAxisTextStyle={{ color: "#333" }}
+            noOfSections={12}
+            maxValue={12}
+            style={styles.barChart}
+            renderTooltip={(item, index) => {
+              return (
+                <View
+                  style={{
+                    marginBottom: 20,
+                    marginLeft: -6,
+                    backgroundColor: "#ffcefe",
+                    paddingHorizontal: 6,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                  }}
+                >
+                  <Text>{item.value}</Text>
+                </View>
+              );
+            }}
+          />
+          <View style={styles.legendContainer}>
+            <View style={styles.legendItem}>
+              <View
+                style={[styles.legendColor, { backgroundColor: "#4CAF50" }]}
+              />
+              <Text style={styles.legendText}>Work</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View
+                style={[styles.legendColor, { backgroundColor: "#FFC107" }]}
+              />
+              <Text style={styles.legendText}>Leisure</Text>
+            </View>
+          </View>
+        </View>
 
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>Sleep Hours</Text>
-        <LineChart
-          data={sleepData}
-          width={screenWidth - 40}
-          height={220}
-          chartConfig={chartConfig}
-          style={styles.chart}
-        />
-      </View>
-
-      {/* Other charts can be added here similar to the original code */}
-    </ScrollView>
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Sleep Hours</Text>
+          <LineChart
+            data={sleepData}
+            height={220}
+            spacing={40}
+            chartConfig={chartConfig}
+            style={styles.lineChart}
+            color="#4CAF50"
+          />
+        </View>
+      </ScrollView>
+    </AppGradient>
   );
 };
 
 const chartConfig = {
   backgroundGradientFrom: "#E0F7FA",
   backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: "#E0F7FA",
+  backgroundGradientTo: "#E1F5FE",
   backgroundGradientToOpacity: 0.5,
   color: (opacity = 1) => `rgba(0, 128, 0, ${opacity})`,
-  strokeWidth: 2, // optional, default 3
+  strokeWidth: 2,
   barPercentage: 0.5,
-  useShadowColorFromDataset: false, // optional
+  useShadowColorFromDataset: false,
   propsForLabels: {
     fontSize: 12,
     fontWeight: "bold",
@@ -217,21 +263,21 @@ const chartConfig = {
   propsForBackgroundLines: {
     strokeWidth: 1,
     stroke: "#e3e3e3",
-    strokeDasharray: "0", // solid background lines with no dashes
+    strokeDasharray: "0",
   },
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F6F6",
+    marginTop: 50,
   },
   header: {
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
     marginVertical: 20,
-    color: "#333",
+    color: "#4CAF50",
   },
   datePickerContainer: {
     flexDirection: "row",
@@ -240,25 +286,76 @@ const styles = StyleSheet.create({
   },
   datePickerText: {
     fontSize: 16,
-    color: "#333",
-  },
-  dateButton: {
-    padding: 10,
-    backgroundColor: "#E0F7FA",
-    borderRadius: 5,
+    color: "#4CAF50",
   },
   chartContainer: {
-    marginVertical: 10,
+    marginVertical: 20,
     alignItems: "center",
+
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    backgroundGradientFrom: "#E0F7FA",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#E0F7FA",
+    backgroundGradientToOpacity: 0.5,
   },
   chartTitle: {
-    fontSize: 18,
-    fontWeight: "500",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#4CAF50",
     marginBottom: 10,
-    color: "#555",
   },
-  chart: {
+  barChart: {
     borderRadius: 16,
+  },
+  lineChart: {
+    borderRadius: 16,
+  },
+  legendContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  legendColor: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 14,
+    color: "#333",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+  },
+  dateButton: {
+    backgroundColor: "#FFFFFF",
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#4CAF50",
   },
 });
 

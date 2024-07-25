@@ -181,10 +181,19 @@ export const importCalendarEvents = async (uri) => {
       },
     });
 
-    console.log("Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Failed to import calendar events:", error);
+    throw error;
+  }
+};
+
+export const saveSelectedEvents = async (events) => {
+  try {
+    const response = await api.post("tasks/save-events", { events });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to save selected events:", error);
     throw error;
   }
 };

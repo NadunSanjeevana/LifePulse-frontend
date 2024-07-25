@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { AppGradient } from "./AppGradient";
 
 const ChatBotButton = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [showCommonQuestions, setShowCommonQuestions] = useState(false);
 
   const commonQuestions = [
     "How about my yesterday daily routine? Any suggestions?",
@@ -30,7 +32,7 @@ const ChatBotButton = () => {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: "https://placeimg.com/140/140/any",
+          avatar: require("../Assets/Images/man.png"),
         },
       },
     ]);
@@ -51,7 +53,7 @@ const ChatBotButton = () => {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: "https://placeimg.com/140/140/any",
+          avatar: require("../Assets/Images/man.png"),
         },
       };
       setMessages((prevMessages) =>
@@ -125,33 +127,52 @@ const ChatBotButton = () => {
         visible={modalVisible}
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
+        transparent={false}
       >
-        <GiftedChat
-          messages={messages}
-          onSend={(messages) => onSend(messages)}
-          user={{
-            _id: 1,
-          }}
-          renderBubble={renderBubble}
-        />
-        <ScrollView style={styles.commonQuestionsContainer}>
-          {commonQuestions.map((question, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.commonQuestionButton}
-              onPress={() => handleCommonQuestion(question)}
-            >
-              <Text style={styles.commonQuestionText}>{question}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Close"
-            onPress={() => setModalVisible(false)}
-            color="#28A745"
-          />
-        </View>
+        <AppGradient>
+          <View style={styles.modalContainer}>
+            <GiftedChat
+              messages={messages}
+              onSend={(messages) => onSend(messages)}
+              user={{
+                _id: 1,
+              }}
+              renderBubble={renderBubble}
+            />
+            <View style={styles.buttonContainer}>
+              <Button
+                title={
+                  showCommonQuestions
+                    ? "Hide Common Questions"
+                    : "Show Common Questions"
+                }
+                onPress={() => setShowCommonQuestions(!showCommonQuestions)}
+                color="#28A745"
+              />
+            </View>
+
+            {showCommonQuestions && (
+              <ScrollView style={styles.commonQuestionsContainer}>
+                {commonQuestions.map((question, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.commonQuestionButton}
+                    onPress={() => handleCommonQuestion(question)}
+                  >
+                    <Text style={styles.commonQuestionText}>{question}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Close"
+                onPress={() => setModalVisible(false)}
+                color="#28A745"
+              />
+            </View>
+          </View>
+        </AppGradient>
       </Modal>
     </>
   );
@@ -170,7 +191,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 1000,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
   commonQuestionsContainer: {
+    flex: 1,
     padding: 10,
     backgroundColor: "#F6F6F6",
   },
@@ -185,8 +211,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    padding: 10,
-    backgroundColor: "white",
+    padding: 5,
   },
 });
 

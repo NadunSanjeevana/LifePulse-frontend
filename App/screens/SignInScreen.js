@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
+import { AppGradient } from "../Components/AppGradient"; // Ensure this is the correct path
 
 const SignInScreen = ({ navigation }) => {
   const { signIn, loading, error } = useContext(AuthContext);
@@ -40,29 +41,31 @@ const SignInScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      {error && <Text style={styles.error}>{error}</Text>}
-      {loading ? (
-        <ActivityIndicator size="large" color="#6AE08B" />
-      ) : (
-        <Button title="Sign In" onPress={handleSignIn} />
-      )}
-    </View>
+    <AppGradient>
+      <View style={styles.container}>
+        <Text style={styles.title}>Sign In</Text>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+        />
+        {error && <Text style={styles.error}>{error}</Text>}
+        {loading ? (
+          <ActivityIndicator size="large" color="#6AE08B" />
+        ) : (
+          <Button title="Sign In" onPress={handleSignIn} />
+        )}
+      </View>
+    </AppGradient>
   );
 };
 
@@ -71,11 +74,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F6F6F6",
+    padding: 16,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
+    color: "#fff",
   },
   input: {
     width: "80%",
@@ -84,6 +88,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
+    backgroundColor: "#fff",
   },
   error: {
     color: "red",

@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import EditProfileModal from "../modal/EditProfileModal"; // Adjust the path as per your project structure
 import { getUserProfile } from "../services/api"; // Adjust the path as necessary
 import { AuthContext } from "../Context/AuthContext";
+import { AppGradient } from "../Components/AppGradient";
 
 const ProfileScreen = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -52,75 +53,77 @@ const ProfileScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.profileHeader}>
-        <TouchableOpacity onPress={handleEdit}>
-          <Image
-            source={{ uri: user.profileImage }}
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.profession}>{user.profession}</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
-        <Text style={styles.location}>{user.location}</Text>
-        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-          <Text style={styles.editButtonText}>Edit Profile</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.tipsContainer}>
-        <Text style={styles.sectionTitle}>Work-Life Balance Tips</Text>
-        <View style={styles.tipBox}>
-          <Icon name="leaf" size={20} color="#28A745" />
-          <Text style={styles.tipText}>
-            Take regular breaks during work hours.
-          </Text>
+    <AppGradient>
+      <ScrollView style={styles.container}>
+        <View style={styles.profileHeader}>
+          <TouchableOpacity onPress={handleEdit}>
+            <Image
+              source={{ uri: user.profileImage }}
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.profession}>{user.profession}</Text>
+          <Text style={styles.bio}>{user.bio}</Text>
+          <Text style={styles.location}>{user.location}</Text>
+          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+            <Text style={styles.editButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.tipBox}>
-          <Icon name="clock-o" size={20} color="#28A745" />
-          <Text style={styles.tipText}>
-            Set clear boundaries between work and personal time.
-          </Text>
+        <View style={styles.tipsContainer}>
+          <Text style={styles.sectionTitle}>Work-Life Balance Tips</Text>
+          <View style={styles.tipBox}>
+            <Icon name="leaf" size={20} color="#28A745" />
+            <Text style={styles.tipText}>
+              Take regular breaks during work hours.
+            </Text>
+          </View>
+          <View style={styles.tipBox}>
+            <Icon name="clock-o" size={20} color="#28A745" />
+            <Text style={styles.tipText}>
+              Set clear boundaries between work and personal time.
+            </Text>
+          </View>
+          <View style={styles.tipBox}>
+            <Icon name="medkit" size={20} color="#28A745" />
+            <Text style={styles.tipText}>
+              Practice mindfulness and relaxation techniques.
+            </Text>
+          </View>
         </View>
-        <View style={styles.tipBox}>
-          <Icon name="medkit" size={20} color="#28A745" />
-          <Text style={styles.tipText}>
-            Practice mindfulness and relaxation techniques.
-          </Text>
+        <View style={styles.badgesContainer}>
+          <Text style={styles.sectionTitle}>Achievements</Text>
+          <View style={styles.badge}>
+            <Image
+              source={require("../Assets/Images/badge1.png")}
+              style={styles.badgeImage}
+            />
+            <Text style={styles.badgeText}>Work-Life Balance Novice</Text>
+          </View>
+          <View style={styles.badge}>
+            <Image
+              source={require("../Assets/Images/badge2.png")}
+              style={styles.badgeImage}
+            />
+            <Text style={styles.badgeText}>Work-Life Balance Intermediate</Text>
+          </View>
+          <View style={styles.badge}>
+            <Image
+              source={require("../Assets/Images/badge3.png")}
+              style={styles.badgeImage}
+            />
+            <Text style={styles.badgeText}>Work-Life Balance Expert</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.badgesContainer}>
-        <Text style={styles.sectionTitle}>Achievements</Text>
-        <View style={styles.badge}>
-          <Image
-            source={require("../Assets/Images/badge1.png")}
-            style={styles.badgeImage}
-          />
-          <Text style={styles.badgeText}>Work-Life Balance Novice</Text>
-        </View>
-        <View style={styles.badge}>
-          <Image
-            source={require("../Assets/Images/badge2.png")}
-            style={styles.badgeImage}
-          />
-          <Text style={styles.badgeText}>Work-Life Balance Intermediate</Text>
-        </View>
-        <View style={styles.badge}>
-          <Image
-            source={require("../Assets/Images/badge3.png")}
-            style={styles.badgeImage}
-          />
-          <Text style={styles.badgeText}>Work-Life Balance Expert</Text>
-        </View>
-      </View>
 
-      <EditProfileModal
-        visible={isEditing}
-        onClose={() => setIsEditing(false)}
-        user={user}
-        onSave={handleSave}
-      />
-    </ScrollView>
+        <EditProfileModal
+          visible={isEditing}
+          onClose={() => setIsEditing(false)}
+          user={user}
+          onSave={handleSave}
+        />
+      </ScrollView>
+    </AppGradient>
   );
 };
 
@@ -128,8 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
-    backgroundColor: "#FFFFFF",
+    paddingTop: 50,
   },
   profileHeader: {
     alignItems: "center",

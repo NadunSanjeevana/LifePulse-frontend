@@ -13,6 +13,7 @@ import Slider from "../Components/Slider";
 import { AuthContext } from "../Context/AuthContext";
 import { getTasksForDate, createTask } from "../services/api";
 import ActivityModal from "../modal/ActivityModal"; // Adjust the path as per your project structure
+import { AppGradient } from "../Components/AppGradient";
 
 const CalendarScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -73,74 +74,74 @@ const CalendarScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <SearchBar />
-      <Slider />
-      <Calendar
-        onDayPress={(day) => setSelectedDate(day.dateString)}
-        markedDates={{
-          [selectedDate]: {
-            selected: true,
-            marked: true,
-            selectedDotColor: "#28A745",
-          },
-        }}
-        theme={{
-          calendarBackground: "#FFFFFF",
-          textSectionTitleColor: "#28A745",
-          selectedDayBackgroundColor: "#28A745",
-          selectedDayTextColor: "#FFFFFF",
-          todayTextColor: "#28A745",
-          dayTextColor: "#333333",
-          textDisabledColor: "#d9e1e8",
-          dotColor: "#28A745",
-          selectedDotColor: "#FFFFFF",
-          arrowColor: "#28A745",
-          monthTextColor: "#28A745",
-          textDayFontFamily: "Roboto",
-          textMonthFontFamily: "Roboto",
-          textDayHeaderFontFamily: "Roboto",
-          textDayFontSize: 16,
-          textMonthFontSize: 18,
-          textDayHeaderFontSize: 14,
-        }}
-      />
-      {selectedDate && isTodayOrFutureDate(selectedDate) && (
-        <View style={styles.activityContainer}>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.addButtonText}>Add Activity</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Display fetched tasks */}
-      <View style={styles.activityContainer}>
-        <Text style={styles.dateText}>Tasks for {selectedDate}:</Text>
-        {tasks.length > 0 ? (
-          tasks.map((task, index) => (
-            <View key={index} style={styles.taskContainer}>
-              <Text style={styles.taskText}>{task.task}</Text>
-              <Text style={styles.taskText}>
-                {task.timeFrom} - {task.timeTo}
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noActivitiesText}>
-            No tasks scheduled for this date.
-          </Text>
+    <AppGradient>
+      <ScrollView style={styles.container}>
+        <SearchBar />
+        <Slider />
+        <Calendar
+          onDayPress={(day) => setSelectedDate(day.dateString)}
+          markedDates={{
+            [selectedDate]: {
+              selected: true,
+              marked: true,
+              selectedDotColor: "#28A745",
+            },
+          }}
+          theme={{
+            textSectionTitleColor: "#28A745",
+            selectedDayTextColor: "#FFFFFF",
+            todayTextColor: "#28A745",
+            dayTextColor: "#333333",
+            textDisabledColor: "#d9e1e8",
+            dotColor: "#28A745",
+            selectedDotColor: "#FFFFFF",
+            arrowColor: "#28A745",
+            monthTextColor: "#28A745",
+            textDayFontFamily: "Roboto",
+            textMonthFontFamily: "Roboto",
+            textDayHeaderFontFamily: "Roboto",
+            textDayFontSize: 16,
+            textMonthFontSize: 18,
+            textDayHeaderFontSize: 14,
+          }}
+        />
+        {selectedDate && isTodayOrFutureDate(selectedDate) && (
+          <View style={styles.activityContainer}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.addButtonText}>Add Activity</Text>
+            </TouchableOpacity>
+          </View>
         )}
-      </View>
 
-      <ActivityModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        addActivity={addActivity}
-      />
-    </ScrollView>
+        {/* Display fetched tasks */}
+        <View style={styles.activityContainer}>
+          <Text style={styles.dateText}>Tasks for {selectedDate}:</Text>
+          {tasks.length > 0 ? (
+            tasks.map((task, index) => (
+              <View key={index} style={styles.taskContainer}>
+                <Text style={styles.taskText}>{task.task}</Text>
+                <Text style={styles.taskText}>
+                  {task.timeFrom} - {task.timeTo}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noActivitiesText}>
+              No tasks scheduled for this date.
+            </Text>
+          )}
+        </View>
+
+        <ActivityModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          addActivity={addActivity}
+        />
+      </ScrollView>
+    </AppGradient>
   );
 };
 
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#FFFFFF",
   },
   activityContainer: {
     marginTop: 20,

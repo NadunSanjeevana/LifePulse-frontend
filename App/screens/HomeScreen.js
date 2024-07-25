@@ -19,15 +19,17 @@ import {
 } from "../services/api";
 import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correct
 import * as DocumentPicker from "expo-document-picker"; // For picking documents
+import { AppGradient } from "../Components/AppGradient";
 
 const HomeScreen = () => {
-  const { userData } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [selectedDate, setSelectedDate] = useState("");
   const [activities, setActivities] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
+    console.log(user);
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0]; // Format date as "YYYY-MM-DD"
     setSelectedDate(formattedDate);
@@ -96,81 +98,87 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.dashboard}>
-        <ChatBotButton />
+    <AppGradient>
+      <ScrollView style={styles.container}>
+        <View style={styles.dashboard}>
+          <ChatBotButton />
 
-        <View style={styles.backgroundRectangle}>
-          <Image
-            source={require("../Assets/Images/login.png")}
-            style={styles.profileImage}
-          />
-          <Text style={styles.welcomeText}>Welcome, Jane Doe</Text>
-        </View>
-        <View style={styles.shape}></View>
-        <View style={styles.ellipse1}></View>
-        <View style={styles.ellipse2}></View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Tasks List</Text>
-      <View style={styles.dateContainer}>
-        <Text style={styles.currentDate}>{selectedDate}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("CalendarScreen")}>
-          <Icon
-            name="calendar"
-            size={24}
-            color="#2D8F95"
-            style={styles.calendarIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.uploadButton}
-          onPress={handleFileUpload}
-        >
-          <Icon name="upload" size={24} color="#2D8F95" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.tasksList}>
-        <Text style={styles.taskText}>Today's Tasks</Text>
-        {(activities[selectedDate] || []).map((activity, index) => (
-          <View key={index} style={styles.taskItem}>
-            <Text style={styles.taskDescription}>{activity.task}</Text>
-            <Text style={styles.taskTime}>
-              {activity.timeFrom} - {activity.timeTo}
+          <View style={styles.backgroundRectangle}>
+            <Image
+              source={require("../Assets/Images/login.png")}
+              style={styles.profileImage}
+            />
+            <Text style={styles.welcomeText}>
+              Welcome, {user ? user.userName : "Guest"}
             </Text>
           </View>
-        ))}
-      </View>
+          <View style={styles.shape}></View>
+          <View style={styles.ellipse1}></View>
+          <View style={styles.ellipse2}></View>
+        </View>
 
-      <View style={styles.iconContainer}>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Icon name="plus-circle" size={24} color="#2D8F95" />
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.sectionTitle}>Tasks List</Text>
+        <View style={styles.dateContainer}>
+          <Text style={styles.currentDate}>{selectedDate}</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("CalendarScreen")}
+          >
+            <Icon
+              name="calendar"
+              size={24}
+              color="#2D8F95"
+              style={styles.calendarIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.uploadButton}
+            onPress={handleFileUpload}
+          >
+            <Icon name="upload" size={24} color="#2D8F95" />
+          </TouchableOpacity>
+        </View>
 
-      <ActivityModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        addActivity={addActivity}
-      />
-    </ScrollView>
+        <View style={styles.tasksList}>
+          <Text style={styles.taskText}>Today's Tasks</Text>
+          {(activities[selectedDate] || []).map((activity, index) => (
+            <View key={index} style={styles.taskItem}>
+              <Text style={styles.taskDescription}>{activity.task}</Text>
+              <Text style={styles.taskTime}>
+                {activity.timeFrom} - {activity.timeTo}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Icon name="plus-circle" size={24} color="#2D8F95" />
+          </TouchableOpacity>
+        </View>
+
+        <ActivityModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          addActivity={addActivity}
+        />
+      </ScrollView>
+    </AppGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F6F6",
+    // backgroundColor: "#F6F6F6",
   },
   dashboard: {
     position: "relative",
     width: "100%",
     height: 300,
-    backgroundColor: "#F6F6F6",
+    // backgroundColor: "#F6F6F6",
   },
   backgroundRectangle: {
     position: "absolute",
@@ -178,32 +186,32 @@ const styles = StyleSheet.create({
     height: 307,
     left: 0,
     top: 0,
-    backgroundColor: "#6AE08B",
+    // backgroundColor: "#6AE08B",
     justifyContent: "center",
     alignItems: "center",
   },
-  shape: {
-    position: "absolute",
-    width: 290,
-    height: 270,
-    left: -99,
-    top: -109,
-    backgroundColor: "rgba(191, 218, 216, 0.49)",
-  },
-  ellipse1: {
-    position: "absolute",
-    width: "31.03%",
-    height: "100%",
-    left: 0,
-    backgroundColor: "rgba(191, 218, 216, 0.49)",
-  },
-  ellipse2: {
-    position: "absolute",
-    width: "31.03%",
-    height: "100%",
-    right: 0,
-    backgroundColor: "rgba(191, 218, 216, 0.49)",
-  },
+  // shape: {
+  //   position: "absolute",
+  //   width: 290,
+  //   height: 270,
+  //   left: -99,
+  //   top: -109,
+  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
+  // },
+  // ellipse1: {
+  //   position: "absolute",
+  //   width: "31.03%",
+  //   height: "100%",
+  //   left: 0,
+  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
+  // },
+  // ellipse2: {
+  //   position: "absolute",
+  //   width: "31.03%",
+  //   height: "100%",
+  //   right: 0,
+  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
+  // },
   profileImage: {
     width: 100,
     height: 100,
@@ -257,7 +265,7 @@ const styles = StyleSheet.create({
   },
   tasksList: {
     margin: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#d3f9d8",
     borderRadius: 24,
     shadowColor: "rgba(0, 0, 0, 0.25)",
     shadowOffset: {

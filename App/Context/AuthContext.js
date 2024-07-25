@@ -1,3 +1,4 @@
+// App/Context/AuthContext.js
 import React, { createContext, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signIn as apiSignIn, register as apiRegister } from "../services/api"; // Adjust the import path as necessary
@@ -15,7 +16,8 @@ const AuthProvider = ({ children }) => {
     try {
       const data = await apiSignIn(credentials);
       await AsyncStorage.setItem("token", data.token); // Storing the token
-      setUser({ email: credentials.email });
+      setUser({ email: credentials.email, userName: data.userName });
+      console.log("User registered:", user);
       return true;
     } catch (err) {
       setError(err.message);
@@ -31,7 +33,8 @@ const AuthProvider = ({ children }) => {
     try {
       const data = await apiRegister(credentials);
       await AsyncStorage.setItem("token", data.token); // Storing the token
-      setUser({ email: credentials.email, name: credentials.username });
+      setUser({ email: credentials.email, userName: data.userName });
+
       return true;
     } catch (err) {
       setError(err.message);
