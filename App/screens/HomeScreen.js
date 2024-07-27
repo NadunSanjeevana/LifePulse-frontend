@@ -1,3 +1,5 @@
+// In HomeScreen.js
+
 import React, { useContext, useState, useEffect } from "react";
 import {
   View,
@@ -6,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert, // Import Alert from react-native
   Platform,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
@@ -16,9 +19,9 @@ import {
   createTask,
   getTasksForDate,
   importCalendarEvents,
+  deleteTask, // Import deleteTask function
 } from "../services/api";
 import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correct
-import * as DocumentPicker from "expo-document-picker"; // For picking documents
 import { AppGradient } from "../Components/AppGradient";
 
 const HomeScreen = () => {
@@ -29,7 +32,6 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log(user);
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0]; // Format date as "YYYY-MM-DD"
     setSelectedDate(formattedDate);
@@ -39,6 +41,7 @@ const HomeScreen = () => {
   const fetchTasks = async (date) => {
     try {
       const tasksForDate = await getTasksForDate(date); // Fetch tasks for the selected date
+      console.log("Tasks for date:", tasksForDate);
       setActivities({ [date]: tasksForDate });
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
@@ -81,20 +84,25 @@ const HomeScreen = () => {
     }
   };
 
-  const handleFileUpload = async () => {
+  const handleDeleteTask = async (taskId) => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-        copyToCacheDirectory: true,
-      });
-      console.log(result);
-      if (!result.canceled) {
-        const { uri } = result.assets[0];
-        const events = await importCalendarEvents(uri);
-      }
+      await deleteTask(taskId);
+      fetchTasks(selectedDate); // Refresh tasks after deletion
     } catch (error) {
-      console.error("Failed to upload calendar file:", error);
+      console.error("Failed to delete task:", error);
     }
+  };
+
+  const confirmDeleteTask = (taskId) => {
+    Alert.alert(
+      "Delete Task",
+      "Are you sure you want to delete this task?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: () => handleDeleteTask(taskId) },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
@@ -105,11 +113,11 @@ const HomeScreen = () => {
 
           <View style={styles.backgroundRectangle}>
             <Image
-              source={require("../Assets/Images/login.png")}
+              source={user.profileImage ? { uri: user.profileImage } : null}
               style={styles.profileImage}
             />
             <Text style={styles.welcomeText}>
-              Welcome, {user ? user.userName : "Guest"}
+              Welcome {user ? user.userName : "Guest"}!
             </Text>
           </View>
           <View style={styles.shape}></View>
@@ -130,12 +138,6 @@ const HomeScreen = () => {
               style={styles.calendarIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={handleFileUpload}
-          >
-            <Icon name="upload" size={24} color="#2D8F95" />
-          </TouchableOpacity>
         </View>
 
         <View style={styles.tasksList}>
@@ -146,6 +148,12 @@ const HomeScreen = () => {
               <Text style={styles.taskTime}>
                 {activity.timeFrom} - {activity.timeTo}
               </Text>
+              <TouchableOpacity
+                onPress={() => confirmDeleteTask(activity.id)}
+                style={styles.deleteButton}
+              >
+                <Icon name="trash" size={20} color="#FF6347" />
+              </TouchableOpacity>
             </View>
           ))}
         </View>
@@ -222,129 +230,79 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontWeight: "600",
-    fontSize: 18,
-    letterSpacing: 0.06,
-    color: "#FFFFFF",
+    fontSize: 24,
+    color: "#2B8E94",
+    textAlign: "center",
     marginTop: 10,
   },
   sectionTitle: {
-    marginTop: 20,
-    textAlign: "left",
+    fontSize: 22,
     fontWeight: "600",
-    fontSize: 18,
-    letterSpacing: 0.06,
-    color: "rgba(0, 0, 0, 0.75)",
-    paddingHorizontal: 20,
+    color: "#2B8E94",
+    textAlign: "center",
+    marginVertical: 20,
   },
   dateContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
     marginBottom: 10,
   },
   currentDate: {
-    textAlign: "left",
-    fontSize: 16,
-    letterSpacing: 0.06,
-    color: "rgba(0, 0, 0, 0.75)",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#2B8E94",
   },
   calendarIcon: {
-    marginLeft: 10,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
-    padding: 10,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
-    marginLeft: 15,
+    marginRight: 10,
   },
   tasksList: {
-    margin: 20,
-    backgroundColor: "#d3f9d8",
-    borderRadius: 24,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
-    padding: 15,
+    paddingHorizontal: 20,
   },
   taskText: {
+    fontSize: 18,
     fontWeight: "600",
-    fontSize: 16,
-    letterSpacing: 0.06,
-    color: "rgba(0, 0, 0, 0.75)",
+    color: "#2B8E94",
     marginBottom: 10,
   },
   taskItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 10,
+    borderRadius: 10,
     marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   taskDescription: {
-    fontWeight: "500",
-    fontSize: 14,
-    letterSpacing: 0.06,
-    color: "rgba(0, 0, 0, 0.75)",
+    fontSize: 16,
+    color: "#333333",
+    width: "60%",
   },
   taskTime: {
-    fontSize: 12,
-    letterSpacing: 0.06,
-    color: "rgba(0, 0, 0, 0.75)",
+    fontSize: 14,
+    color: "#777777",
+    width: "25%",
+  },
+  deleteButton: {
+    padding: 5,
   },
   iconContainer: {
-    position: "absolute",
-    bottom: 50,
-    right: 30,
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
   addButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
     padding: 10,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
-    marginLeft: 15,
-  },
-  uploadButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
-    padding: 10,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
-    marginLeft: 15,
-  },
-  calendarButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
-    padding: 10,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    elevation: 4,
   },
 });
 
