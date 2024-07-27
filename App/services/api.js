@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native"; // Import Platform from react-native
 
 const API_BASE_URL = "http://192.168.8.197:3000/api"; // Replace with your backend URL
+// const API_BASE_URL = "https://lifepulse-backend-oasx.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -102,8 +103,10 @@ export const updateUserDetails = async (updatedUser) => {
 export const getTasksForDate = async (date) => {
   try {
     const response = await api.get(`/tasks?date=${date}`);
+    console.log("Tasks for date:", response.data);
     // Format the data to match the frontend expectations
     const formattedData = response.data.map((task) => ({
+      id: task._id,
       task: task.description,
       timeFrom: new Date(task.timeFrom).toLocaleTimeString([], {
         hour: "2-digit",
@@ -195,5 +198,31 @@ export const saveSelectedEvents = async (events) => {
   } catch (error) {
     console.error("Failed to save selected events:", error);
     throw error;
+  }
+};
+
+export const deleteTask = async (taskId) => {
+  try {
+    const response = await api.delete(`/tasks/${taskId}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error deleting task:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
+  }
+};
+
+export const getChatbotResponse = async (message) => {
+  try {
+    const response = await api.post("/chatbot/chat", { message });
+    return response.data.response;
+  } catch (error) {
+    console.error(
+      "Failed to fetch chatbot response:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error;
   }
 };
