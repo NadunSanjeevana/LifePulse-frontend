@@ -9,11 +9,12 @@ import {
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import SearchBar from "../Components/SearchBar";
-import Slider from "../Components/Slider";
+
 import { AuthContext } from "../Context/AuthContext";
 import { getTasksForDate, createTask } from "../services/api";
 import ActivityModal from "../modal/ActivityModal"; // Adjust the path as per your project structure
 import { AppGradient } from "../Components/AppGradient";
+import Colors from "../Shared/Colors";
 
 const CalendarScreen = () => {
   const { userData } = useContext(AuthContext);
@@ -67,36 +68,36 @@ const CalendarScreen = () => {
   };
 
   // Function to check if the selected date is today or future
-  const isTodayOrFutureDate = (date) => {
-    const today = new Date().setHours(0, 0, 0, 0); // Today's date without time
-    const selected = new Date(date).setHours(0, 0, 0, 0); // Selected date without time
-    return selected >= today;
-  };
+  // const isTodayOrFutureDate = (date) => {
+  //   const today = new Date().setHours(0, 0, 0, 0); // Today's date without time
+  //   const selected = new Date(date).setHours(0, 0, 0, 0); // Selected date without time
+  //   return selected >= today;
+  // };
 
   return (
     <AppGradient>
       <ScrollView style={styles.container}>
         <SearchBar />
-        <Slider />
+
         <Calendar
           onDayPress={(day) => setSelectedDate(day.dateString)}
           markedDates={{
             [selectedDate]: {
               selected: true,
               marked: true,
-              selectedDotColor: "#28A745",
+              selectedDotColor: Colors.shadow,
             },
           }}
           theme={{
-            textSectionTitleColor: "#28A745",
-            selectedDayTextColor: "#FFFFFF",
-            todayTextColor: "#28A745",
-            dayTextColor: "#333333",
-            textDisabledColor: "#d9e1e8",
-            dotColor: "#28A745",
-            selectedDotColor: "#FFFFFF",
-            arrowColor: "#28A745",
-            monthTextColor: "#28A745",
+            textSectionTitleColor: Colors.primary,
+            selectedDayTextColor: Colors.white,
+            todayTextColor: Colors.orange,
+            dayTextColor: Colors.primary,
+            textDisabledColor: Colors.shadow,
+            dotColor: Colors.shadow,
+            selectedDotColor: Colors.orange,
+            arrowColor: Colors.primary,
+            monthTextColor: Colors.primary,
             textDayFontFamily: "Roboto",
             textMonthFontFamily: "Roboto",
             textDayHeaderFontFamily: "Roboto",
@@ -105,16 +106,15 @@ const CalendarScreen = () => {
             textDayHeaderFontSize: 14,
           }}
         />
-        {selectedDate && isTodayOrFutureDate(selectedDate) && (
-          <View style={styles.activityContainer}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => setModalVisible(true)}
-            >
-              <Text style={styles.addButtonText}>Add Activity</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+
+        <View style={styles.activityContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.addButtonText}>Add Activity</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Display fetched tasks */}
         <View style={styles.activityContainer}>
@@ -156,33 +156,33 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#28A745",
+    color: Colors.primary,
   },
   taskContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#CCCCCC",
+    borderBottomColor: Colors.shadow,
     paddingVertical: 10,
   },
   taskText: {
     fontSize: 16,
-    color: "#333333",
+    color: Colors.primary,
   },
   noActivitiesText: {
     fontSize: 16,
-    color: "gray",
+    color: Colors.shadow,
   },
   addButton: {
-    backgroundColor: "#28A745",
+    backgroundColor: Colors.orange,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 10,
   },
   addButtonText: {
-    color: "#FFFFFF",
+    color: Colors.white,
     fontSize: 16,
     textAlign: "center",
   },

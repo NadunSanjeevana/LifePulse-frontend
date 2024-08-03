@@ -12,6 +12,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { updateUserDetails } from "../services/api";
+import Colors from "../Shared/Colors";
 
 const EditProfileModal = ({ visible, onClose, user, onSave }) => {
   const [editedUser, setEditedUser] = useState(user);
@@ -114,13 +115,13 @@ const EditProfileModal = ({ visible, onClose, user, onSave }) => {
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#DC3545" }]}
+              style={[styles.button, { backgroundColor: Colors.orange }]}
               onPress={onClose}
             >
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#28A745" }]}
+              style={[styles.button, { backgroundColor: Colors.primary }]}
               onPress={handleSave}
             >
               <Text style={styles.buttonText}>Save</Text>
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.shadow,
     padding: 20,
     borderRadius: 10,
     width: "80%",
@@ -151,10 +152,11 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 10,
     borderWidth: 2,
-    borderColor: "#28A745",
+    borderColor: Colors.primary,
     alignSelf: "center",
   },
   input: {
+    backgroundColor: Colors.white,
     width: "100%",
     borderColor: "#ccc",
     borderWidth: 1,

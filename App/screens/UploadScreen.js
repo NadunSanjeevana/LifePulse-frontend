@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,17 @@ import {
   StyleSheet,
   Platform,
   Alert,
+  Image,
+  Dimensions,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { Picker } from "@react-native-picker/picker";
+import { useFocusEffect } from "@react-navigation/native";
 import { importCalendarEvents, saveSelectedEvents } from "../services/api"; // Adjust the path as needed
 import { AppGradient } from "../Components/AppGradient";
+import Colors from "../Shared/Colors";
+
+const { width, height } = Dimensions.get("window");
 
 const UploadScreen = () => {
   const [events, setEvents] = useState([]);
@@ -25,6 +31,15 @@ const UploadScreen = () => {
     { label: "Sleep", value: "Sleep" },
     { label: "Other", value: "Other" },
   ];
+
+  useFocusEffect(
+    useCallback(() => {
+      // Reset the state when the screen is focused
+      setEvents([]);
+      setSelectedEvents([]);
+      setAllSelected(false);
+    }, [])
+  );
 
   const handleFileUpload = async () => {
     try {
@@ -83,18 +98,37 @@ const UploadScreen = () => {
   return (
     <AppGradient>
       <View style={styles.container}>
-        <Button
-          title="Upload Calendar File"
-          onPress={handleFileUpload}
-          color="#4CAF50"
-        />
+        {events.length === 0 && (
+          <View style={styles.centeredContainer}>
+            <Image
+              source={require("../Assets/Images/calender1.png")} // Adjust the path as needed
+              style={styles.image}
+            />
+            <View style={styles.centeredButtonContainer}>
+              <Button
+                title="Upload Calendar File"
+                onPress={handleFileUpload}
+                color={Colors.orange}
+              />
+            </View>
+          </View>
+        )}
         {events.length > 0 && (
           <>
-            <Button
-              title={allSelected ? "Deselect All" : "Select All"}
-              onPress={handleSelectAll}
-              color="#4CAF50"
-            />
+            <View style={styles.topButtonContainer}>
+              <Button
+                title="Upload Calendar File"
+                onPress={handleFileUpload}
+                color={Colors.orange}
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title={allSelected ? "Deselect All" : "Select All"}
+                onPress={handleSelectAll}
+                color={Colors.orange}
+              />
+            </View>
             <FlatList
               data={events}
               keyExtractor={(item, index) => index.toString()}
@@ -106,9 +140,13 @@ const UploadScreen = () => {
                     selectedEvents.includes(item) && styles.selectedEvent,
                   ]}
                 >
-                  <Text>{item.summary}</Text>
-                  <Text>{new Date(item.start).toLocaleString()}</Text>
-                  <Text>{new Date(item.end).toLocaleString()}</Text>
+                  <Text style={styles.eventText}>{item.summary}</Text>
+                  <Text style={styles.eventText}>
+                    {new Date(item.start).toLocaleString()}
+                  </Text>
+                  <Text style={styles.eventText}>
+                    {new Date(item.end).toLocaleString()}
+                  </Text>
                   <Picker
                     selectedValue={item.category}
                     onValueChange={(value) => handleCategoryChange(item, value)}
@@ -125,11 +163,13 @@ const UploadScreen = () => {
                 </TouchableOpacity>
               )}
             />
-            <Button
-              title="Import Selected Events"
-              onPress={handleImportEvents}
-              color="#4CAF50"
-            />
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Import Selected Events"
+                onPress={handleImportEvents}
+                color={Colors.orange}
+              />
+            </View>
           </>
         )}
       </View>
@@ -143,25 +183,49 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : 30,
     padding: 16,
   },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  centeredButtonContainer: {
+    marginTop: 20,
+  },
+  topButtonContainer: {
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonContainer: {
+    padding: 10,
+  },
   eventItem: {
     padding: 16,
     marginVertical: 8,
-    backgroundColor: "#fff",
-    borderColor: "#ddd",
+    backgroundColor: Colors.white,
+    borderColor: Colors.shadow,
     borderWidth: 1,
     borderRadius: 5,
   },
   selectedEvent: {
-    backgroundColor: "#d3f9d8",
+    backgroundColor: Colors.shadow,
   },
   picker: {
     height: 50,
     width: 150,
     marginTop: 10,
-    backgroundColor: "#fff",
-    borderColor: "#ddd",
+    backgroundColor: Colors.white,
+    borderColor: Colors.shadow,
     borderWidth: 1,
     borderRadius: 5,
+  },
+  eventText: {
+    color: Colors.black,
+  },
+  image: {
+    width: width,
+    height: height * 0.5,
+    marginBottom: 10,
   },
 });
 
