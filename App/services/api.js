@@ -2,8 +2,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native"; // Import Platform from react-native
 
-const API_BASE_URL = "http://192.168.8.197:3000/api"; // Replace with your backend URL
-// const API_BASE_URL = "https://lifepulse-backend-oasx.onrender.com";
+// const API_BASE_URL = "http://192.168.8.197:3000/api"; // Replace with your backend URL
+const API_BASE_URL = "https://lifepulse-8ebd589c54c4.herokuapp.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -103,7 +103,6 @@ export const updateUserDetails = async (updatedUser) => {
 export const getTasksForDate = async (date) => {
   try {
     const response = await api.get(`/tasks?date=${date}`);
-    console.log("Tasks for date:", response.data);
     // Format the data to match the frontend expectations
     const formattedData = response.data.map((task) => ({
       id: task._id,

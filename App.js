@@ -14,6 +14,7 @@ import SignInScreen from "./App/screens/SignInScreen";
 import RegisterScreen from "./App/screens/RegisterScreen";
 import UploadScreen from "./App/screens/UploadScreen";
 import { AuthProvider } from "./App/Context/AuthContext";
+import Colors from "./App/Shared/Colors";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,10 +41,10 @@ function MainTabs() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#6AE08B",
+        tabBarActiveTintColor: Colors.orange,
         tabBarInactiveTintColor: "gray",
         tabBarStyle: {
-          backgroundColor: "#d3f9d8", // Change this color to your desired background color
+          backgroundColor: Colors.white, // Change this color to your desired background color
           borderTopColor: "transparent", // Optional: Removes top border of the tab bar
           paddingBottom: 5, // Optional: Adjust padding as needed
           paddingTop: 5, // Optional: Adjust padding as needed

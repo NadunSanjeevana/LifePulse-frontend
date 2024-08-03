@@ -1,9 +1,6 @@
-export default{
-    primary:'#0C7DE4',
-    white:'#fff',
-    gray:'#979191',
-    bgColor:'#F6F8FC',
-    black:'#000',
-    green:'#0CD650'
-
-}
+export default {
+  primary: "#145858",
+  shadow: "#C8E0CA",
+  orange: "#F7B318",
+  white: "#FFFFFF",
+};

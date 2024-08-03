@@ -1,16 +1,23 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+import colors from "../Shared/Colors";
+
+const { width, height } = Dimensions.get("window");
 
 const OnboardingScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.backgroundShapes}>
-        <View style={styles.circle1}></View>
-        <View style={styles.circle2}></View>
-      </View>
       <Image
         source={require("../Assets/Images/onboard.png")}
         style={styles.image}
+        resizeMode="contain"
       />
       <Text style={styles.title}>Balancing life, unlocking potential.</Text>
       <Text style={styles.description}>
@@ -36,7 +43,7 @@ const OnboardingScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F6F6",
+    backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
@@ -46,29 +53,9 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
   },
-  circle1: {
-    width: 290,
-    height: 270,
-    backgroundColor: "rgba(106, 224, 139, 0.49)",
-    borderBottomLeftRadius: 145,
-    borderBottomRightRadius: 145,
-    position: "absolute",
-    right: 116,
-    top: -109,
-  },
-  circle2: {
-    width: 290,
-    height: 270,
-    backgroundColor: "rgba(106, 224, 139, 0.49)",
-    borderTopLeftRadius: 145,
-    borderTopRightRadius: 145,
-    position: "absolute",
-    right: 115,
-    top: 0,
-  },
   image: {
-    width: 120,
-    height: 120,
+    width: width * 0.8,
+    height: height * 0.4,
     marginBottom: 30,
   },
   title: {
@@ -77,7 +64,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginHorizontal: 20,
     marginBottom: 10,
-    color: "rgba(0, 0, 0, 0.75)",
+    color: colors.primary,
   },
   description: {
     fontSize: 13,
@@ -85,12 +72,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginHorizontal: 48,
     marginBottom: 20,
-    color: "rgba(0, 0, 0, 0.74)",
+    color: colors.primary,
   },
   button: {
     width: 325,
     height: 62,
-    backgroundColor: "#6AE08B",
+    backgroundColor: colors.orange,
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 10,
@@ -99,7 +86,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: colors.white,
   },
 });
 

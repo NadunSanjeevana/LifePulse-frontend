@@ -2,10 +2,14 @@
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet } from "react-native";
+import colors from "../Shared/Colors";
 
 export const AppGradient = ({ children }) => {
   return (
-    <LinearGradient colors={["#6AE08B", "#5A5A5A"]} style={styles.gradient}>
+    <LinearGradient
+      colors={[colors.orange, colors.white]}
+      style={styles.gradient}
+    >
       {children}
     </LinearGradient>
   );

@@ -1,5 +1,3 @@
-// In HomeScreen.js
-
 import React, { useContext, useState, useEffect } from "react";
 import {
   View,
@@ -8,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Alert, // Import Alert from react-native
+  ImageBackground,
+  Alert,
   Platform,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
@@ -19,10 +18,11 @@ import {
   createTask,
   getTasksForDate,
   importCalendarEvents,
-  deleteTask, // Import deleteTask function
+  deleteTask,
 } from "../services/api";
-import ChatBotButton from "../Components/ChatBotButton"; // Ensure the path is correct
+import ChatBotButton from "../Components/ChatBotButton";
 import { AppGradient } from "../Components/AppGradient";
+import Colors from "../Shared/Colors";
 
 const HomeScreen = () => {
   const { user } = useContext(AuthContext);
@@ -33,19 +33,18 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const today = new Date();
-    const formattedDate = today.toISOString().split("T")[0]; // Format date as "YYYY-MM-DD"
+    const formattedDate = today.toISOString().split("T")[0];
     setSelectedDate(formattedDate);
-    fetchTasks(formattedDate); // Fetch tasks for today's date initially
+    fetchTasks(formattedDate);
   }, []);
 
   const fetchTasks = async (date) => {
     try {
-      const tasksForDate = await getTasksForDate(date); // Fetch tasks for the selected date
+      const tasksForDate = await getTasksForDate(date);
       console.log("Tasks for date:", tasksForDate);
       setActivities({ [date]: tasksForDate });
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
-      // Handle error (e.g., show error message to the user)
     }
   };
 
@@ -59,7 +58,7 @@ const HomeScreen = () => {
     };
 
     try {
-      const savedActivity = await createTask(newEntry); // Save to backend
+      const savedActivity = await createTask(newEntry);
       const formattedActivity = {
         task: savedActivity.description,
         timeFrom: new Date(savedActivity.timeFrom).toLocaleTimeString([], {
@@ -87,7 +86,7 @@ const HomeScreen = () => {
   const handleDeleteTask = async (taskId) => {
     try {
       await deleteTask(taskId);
-      fetchTasks(selectedDate); // Refresh tasks after deletion
+      fetchTasks(selectedDate);
     } catch (error) {
       console.error("Failed to delete task:", error);
     }
@@ -108,9 +107,12 @@ const HomeScreen = () => {
   return (
     <AppGradient>
       <ScrollView style={styles.container}>
-        <View style={styles.dashboard}>
+        <ImageBackground
+          source={require("../Assets/Images/home.png")}
+          style={styles.dashboard}
+          resizeMode="cover"
+        >
           <ChatBotButton />
-
           <View style={styles.backgroundRectangle}>
             <Image
               source={user.profileImage ? { uri: user.profileImage } : null}
@@ -123,7 +125,7 @@ const HomeScreen = () => {
           <View style={styles.shape}></View>
           <View style={styles.ellipse1}></View>
           <View style={styles.ellipse2}></View>
-        </View>
+        </ImageBackground>
 
         <Text style={styles.sectionTitle}>Tasks List</Text>
         <View style={styles.dateContainer}>
@@ -134,7 +136,7 @@ const HomeScreen = () => {
             <Icon
               name="calendar"
               size={24}
-              color="#2D8F95"
+              color={Colors.primary}
               style={styles.calendarIcon}
             />
           </TouchableOpacity>
@@ -163,7 +165,7 @@ const HomeScreen = () => {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Icon name="plus-circle" size={24} color="#2D8F95" />
+            <Icon name="plus-circle" size={24} color={Colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -180,13 +182,12 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#F6F6F6",
   },
   dashboard: {
     position: "relative",
     width: "100%",
     height: 300,
-    // backgroundColor: "#F6F6F6",
+    opacity: 0.9,
   },
   backgroundRectangle: {
     position: "absolute",
@@ -194,51 +195,28 @@ const styles = StyleSheet.create({
     height: 307,
     left: 0,
     top: 0,
-    // backgroundColor: "#6AE08B",
     justifyContent: "center",
     alignItems: "center",
   },
-  // shape: {
-  //   position: "absolute",
-  //   width: 290,
-  //   height: 270,
-  //   left: -99,
-  //   top: -109,
-  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
-  // },
-  // ellipse1: {
-  //   position: "absolute",
-  //   width: "31.03%",
-  //   height: "100%",
-  //   left: 0,
-  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
-  // },
-  // ellipse2: {
-  //   position: "absolute",
-  //   width: "31.03%",
-  //   height: "100%",
-  //   right: 0,
-  //   backgroundColor: "rgba(191, 218, 216, 0.49)",
-  // },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     borderWidth: 3,
-    borderColor: "#2B8E94",
+    borderColor: Colors.shadow,
     marginTop: 50,
   },
   welcomeText: {
     fontWeight: "600",
     fontSize: 24,
-    color: "#2B8E94",
+    color: Colors.primary,
     textAlign: "center",
     marginTop: 10,
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#2B8E94",
+    color: Colors.primary,
     textAlign: "center",
     marginVertical: 20,
   },
@@ -252,7 +230,7 @@ const styles = StyleSheet.create({
   currentDate: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#2B8E94",
+    color: Colors.primary,
   },
   calendarIcon: {
     marginRight: 10,
@@ -263,18 +241,18 @@ const styles = StyleSheet.create({
   taskText: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#2B8E94",
+    color: Colors.primary,
     marginBottom: 10,
   },
   taskItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.shadow,
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,
-    shadowColor: "#000",
+    shadowColor: Colors.white,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -285,12 +263,12 @@ const styles = StyleSheet.create({
   },
   taskDescription: {
     fontSize: 16,
-    color: "#333333",
+    color: Colors.primary,
     width: "60%",
   },
   taskTime: {
     fontSize: 14,
-    color: "#777777",
+    color: Colors.primary,
     width: "25%",
   },
   deleteButton: {
@@ -303,6 +281,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     padding: 10,
+    color: Colors.primary,
   },
 });
 
