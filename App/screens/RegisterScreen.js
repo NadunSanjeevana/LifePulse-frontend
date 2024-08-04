@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import { Asset } from "expo-asset";
 import { AuthContext } from "../Context/AuthContext";
 import { AppGradient } from "../Components/AppGradient";
 import colors from "../Shared/Colors";
@@ -57,12 +58,14 @@ const RegisterScreen = ({ navigation }) => {
     }
   };
 
+  const imageUri = Asset.fromModule(require("../Assets/Images/signin.png")).uri;
+
   return (
     <AppGradient>
       <View style={styles.container}>
         <Text style={styles.title}>Register</Text>
         <Image
-          source={require("../Assets/Images/signin.png")} // Ensure this path is correct
+          source={{ uri: imageUri }} // Ensure this path is correct
           style={styles.image}
           resizeMode="contain"
         />

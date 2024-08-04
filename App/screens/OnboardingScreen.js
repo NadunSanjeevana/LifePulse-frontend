@@ -7,15 +7,19 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { Asset } from "expo-asset";
 import colors from "../Shared/Colors";
 
 const { width, height } = Dimensions.get("window");
 
 const OnboardingScreen = ({ navigation }) => {
+  const imageUri = Asset.fromModule(
+    require("../Assets/Images/onboard.png")
+  ).uri;
   return (
     <View style={styles.container}>
       <Image
-        source={require("../Assets/Images/onboard.png")}
+        source={{ uri: imageUri }}
         style={styles.image}
         resizeMode="contain"
       />

@@ -7,9 +7,10 @@ import {
   Button,
   ScrollView,
   Text,
-  Image, // Import Image component
+  Image,
 } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { Asset } from "expo-asset";
 import { AppGradient } from "./AppGradient";
 import { getChatbotResponse } from "../services/api";
 import Colors from "../Shared/Colors";
@@ -34,7 +35,8 @@ const ChatBotButton = () => {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: require("../Assets/Images/chaticon.png"),
+          avatar: Asset.fromModule(require("../Assets/Images/chaticon.png"))
+            .uri,
         },
       },
     ]);
@@ -55,7 +57,8 @@ const ChatBotButton = () => {
         user: {
           _id: 2,
           name: "Chatbot",
-          avatar: require("../Assets/Images/chaticon.png"),
+          avatar: Asset.fromModule(require("../Assets/Images/chaticon.png"))
+            .uri,
         },
       };
       setMessages((prevMessages) =>
@@ -102,16 +105,17 @@ const ChatBotButton = () => {
     );
   };
 
+  const iconImageUri = Asset.fromModule(
+    require("../Assets/Images/chaticon.png")
+  ).uri;
+
   return (
     <>
       <TouchableOpacity
         style={styles.chatBotButton}
         onPress={() => setModalVisible(true)}
       >
-        <Image
-          source={require("../Assets/Images/chaticon.png")}
-          style={styles.chatBotIcon}
-        />
+        <Image source={{ uri: iconImageUri }} style={styles.chatBotIcon} />
       </TouchableOpacity>
 
       <Modal
@@ -174,7 +178,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     right: 20,
-
     width: 50,
     height: 50,
     borderRadius: 25,

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { Asset } from "expo-asset";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ActivityModal from "../modal/ActivityModal";
 import {
@@ -104,11 +105,13 @@ const HomeScreen = () => {
     );
   };
 
+  const imageUri = Asset.fromModule(require("../Assets/Images/home.png")).uri;
+
   return (
     <AppGradient>
       <ScrollView style={styles.container}>
         <ImageBackground
-          source={require("../Assets/Images/home.png")}
+          source={{ uri: imageUri }}
           style={styles.dashboard}
           resizeMode="cover"
         >

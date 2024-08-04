@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { Asset } from "expo-asset";
 import EditProfileModal from "../modal/EditProfileModal"; // Adjust the path as per your project structure
 import { getUserProfile } from "../services/api"; // Adjust the path as necessary
 import { AuthContext } from "../Context/AuthContext";
@@ -52,6 +53,16 @@ const ProfileScreen = () => {
     return <Text>{error}</Text>;
   }
 
+  const badge1Uri = Asset.fromModule(
+    require("../Assets/Images/badge1.png")
+  ).uri;
+  const badge2Uri = Asset.fromModule(
+    require("../Assets/Images/badge2.png")
+  ).uri;
+  const badge3Uri = Asset.fromModule(
+    require("../Assets/Images/badge3.png")
+  ).uri;
+
   return (
     <AppGradient>
       <ScrollView style={styles.container}>
@@ -94,24 +105,15 @@ const ProfileScreen = () => {
         <View style={styles.badgesContainer}>
           <Text style={styles.sectionTitle}>Achievements</Text>
           <View style={styles.badge}>
-            <Image
-              source={require("../Assets/Images/badge1.png")}
-              style={styles.badgeImage}
-            />
+            <Image source={{ uri: badge1Uri }} style={styles.badgeImage} />
             <Text style={styles.badgeText}>Work-Life Balance Novice</Text>
           </View>
           <View style={styles.badge}>
-            <Image
-              source={require("../Assets/Images/badge2.png")}
-              style={styles.badgeImage}
-            />
+            <Image source={{ uri: badge2Uri }} style={styles.badgeImage} />
             <Text style={styles.badgeText}>Work-Life Balance Intermediate</Text>
           </View>
           <View style={styles.badge}>
-            <Image
-              source={require("../Assets/Images/badge3.png")}
-              style={styles.badgeImage}
-            />
+            <Image source={{ uri: badge3Uri }} style={styles.badgeImage} />
             <Text style={styles.badgeText}>Work-Life Balance Expert</Text>
           </View>
         </View>

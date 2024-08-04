@@ -11,8 +11,9 @@ import {
   Dimensions,
 } from "react-native";
 import { AuthContext } from "../Context/AuthContext";
-import { AppGradient } from "../Components/AppGradient"; // Ensure this is the correct path
+import { AppGradient } from "../Components/AppGradient";
 import colors from "../Shared/Colors";
+import { Asset } from "expo-asset";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,13 +46,15 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
+  const imageUri = Asset.fromModule(require("../Assets/Images/signin.png")).uri;
+
   return (
     <AppGradient>
       <View style={styles.container}>
         <Text style={styles.title}>Sign In</Text>
         <Image
-          source={require("../Assets/Images/signin.png")} // Ensure this path is correct
           style={styles.image}
+          source={{ uri: imageUri }}
           resizeMode="contain"
         />
 

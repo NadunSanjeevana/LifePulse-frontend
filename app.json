@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "education-app",
-    "slug": "codebox",
+    "name": "life-pulse",
+    "slug": "life-pulse",
     "version": "1.0.0",
     "scheme": "codebox",
     "orientation": "portrait",
@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -22,14 +24,17 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.tubeguruji.codebox",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "8df0d0df-8767-4c24-bbbf-1f99357ce6eb"
+        "projectId": "cdb2b217-78f4-488e-8ece-4a0ff542fa67"
       }
     },
     "plugins": [
@@ -40,6 +45,7 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "owner": "nadun1002"
   }
 }

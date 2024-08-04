@@ -14,6 +14,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { Picker } from "@react-native-picker/picker";
 import { useFocusEffect } from "@react-navigation/native";
+import { Asset } from "expo-asset";
 import { importCalendarEvents, saveSelectedEvents } from "../services/api"; // Adjust the path as needed
 import { AppGradient } from "../Components/AppGradient";
 import Colors from "../Shared/Colors";
@@ -94,6 +95,9 @@ const UploadScreen = () => {
       Alert.alert("Error", "Failed to import events");
     }
   };
+  const imageUri = Asset.fromModule(
+    require("../Assets/Images/calender1.png")
+  ).uri;
 
   return (
     <AppGradient>
@@ -101,7 +105,7 @@ const UploadScreen = () => {
         {events.length === 0 && (
           <View style={styles.centeredContainer}>
             <Image
-              source={require("../Assets/Images/calender1.png")} // Adjust the path as needed
+              source={{ uri: imageUri }} // Adjust the path as needed
               style={styles.image}
             />
             <View style={styles.centeredButtonContainer}>
