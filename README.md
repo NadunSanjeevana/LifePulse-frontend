@@ -14,7 +14,7 @@ The **Work-Life Balance App** is a React Native application designed to help use
 - **Frontend**: React Native  
 - **State Management**: Redux  
 - **Navigation**: React Navigation  
-- **Backend**: Firebase (used for authentication, database, and notifications)  
+
 
 
 ## Installation
@@ -51,9 +51,8 @@ The **Work-Life Balance App** is a React Native application designed to help use
 
 ## Usage
 1. Launch the app on your device or emulator.  
-2. Sign up or log in using Google authentication.  
-3. Add tasks, set reminders, and track your progress.  
-4. Explore mindfulness tips to improve your work-life balance.  
+2. Add tasks, set reminders, and track your progress.  
+3. Explore mindfulness tips to improve your work-life balance.  
 
 
 
