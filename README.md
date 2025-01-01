@@ -56,7 +56,4 @@ The **Work-Life Balance App** is a React Native application designed to help use
 
 
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for detailed information.  
-
 
